@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NOVA — офлайн</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px;
+        background: #07080d; color: #edf0f7;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      .card {
+        max-width: 420px; text-align: center; border: 1px solid #222839; border-radius: 24px;
+        background: #11141c; padding: 40px 28px;
+      }
+      .spark { width: 52px; height: 52px; margin: 0 auto 20px; }
+      h1 { font-size: 22px; margin: 0 0 10px; letter-spacing: -0.02em; }
+      p { color: #8b93a7; font-size: 14px; line-height: 1.6; margin: 0 0 24px; }
+      button {
+        font: inherit; font-weight: 600; font-size: 14px; cursor: pointer;
+        background: #7a8cff; color: #06070c; border: 0; border-radius: 12px; padding: 11px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <svg class="spark" viewBox="0 0 64 64" aria-hidden="true">
+        <path fill="#7a8cff" d="M32 12c1.6 10.2 9.8 18.4 20 20-10.2 1.6-18.4 9.8-20 20-1.6-10.2-9.8-18.4-20-20 10.2-1.6 18.4-9.8 20-20Z"/>
+      </svg>
+      <h1>Немає з'єднання</h1>
+      <p>
+        Ця сторінка ще не збережена в кеші. Відкриті раніше інструменти NOVA працюють офлайн —
+        поверніться назад або спробуйте оновити сторінку.
+      </p>
+      <button onclick="location.reload()">Спробувати ще раз</button>
+    </div>
+  </body>
+</html>

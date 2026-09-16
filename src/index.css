@@ -1,0 +1,250 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   NOVA design tokens
+   Every semantic role has an explicit value in both themes — light mode is a
+   full palette, not an inverted background.
+--------------------------------------------------------------------------- */
+@layer base {
+  :root,
+  [data-theme='dark'] {
+    color-scheme: dark;
+    --nova-bg: 7 8 13;
+    --nova-surface: 12 14 21;
+    --nova-card: 17 20 28;
+    --nova-elevated: 22 26 36;
+    --nova-border: 34 40 57;
+    --nova-border-strong: 48 56 78;
+    --nova-text: 237 240 247;
+    --nova-muted: 139 147 167;
+    --nova-faint: 95 103 122;
+    --nova-accent: 122 140 255;
+    --nova-accent-soft: 38 44 82;
+    --nova-accent-fg: 6 7 12;
+    --nova-success: 61 220 151;
+    --nova-warning: 255 184 107;
+    --nova-danger: 255 107 107;
+    --nova-grid: 255 255 255;
+    --nova-grid-opacity: 0.022;
+    --nova-halo-opacity: 0.5;
+  }
+
+  [data-theme='light'] {
+    color-scheme: light;
+    --nova-bg: 244 246 251;
+    --nova-surface: 255 255 255;
+    --nova-card: 255 255 255;
+    --nova-elevated: 255 255 255;
+    --nova-border: 226 230 240;
+    --nova-border-strong: 200 207 223;
+    --nova-text: 14 17 23;
+    --nova-muted: 92 100 121;
+    --nova-faint: 134 142 162;
+    --nova-accent: 67 87 240;
+    --nova-accent-soft: 232 235 255;
+    --nova-accent-fg: 255 255 255;
+    --nova-success: 12 150 103;
+    --nova-warning: 176 102 6;
+    --nova-danger: 205 46 46;
+    --nova-grid: 15 23 42;
+    --nova-grid-opacity: 0.032;
+    --nova-halo-opacity: 0.22;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+  }
+
+  #root {
+    min-height: 100dvh;
+    isolation: isolate;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/70 ring-offset-2;
+    --tw-ring-offset-color: rgb(var(--nova-bg));
+  }
+
+  ::selection {
+    background: rgb(var(--nova-accent) / 0.28);
+    color: rgb(var(--nova-text));
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-[-0.02em];
+    text-wrap: balance;
+  }
+
+  /* Custom scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--nova-border-strong)) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--nova-border-strong));
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--nova-faint));
+    background-clip: content-box;
+  }
+
+  input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      rgb(var(--nova-accent)) var(--range-progress, 50%),
+      rgb(var(--nova-border)) var(--range-progress, 50%)
+    );
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 18px;
+    width: 18px;
+    margin-top: -6px;
+    border-radius: 999px;
+    background: rgb(var(--nova-text));
+    border: 3px solid rgb(var(--nova-accent));
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
+    transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  input[type='range']:active::-webkit-slider-thumb {
+    transform: scale(1.12);
+  }
+  input[type='range']::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--nova-border));
+  }
+  input[type='range']::-moz-range-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--nova-accent));
+  }
+  input[type='range']::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    border-radius: 999px;
+    background: rgb(var(--nova-text));
+    border: 3px solid rgb(var(--nova-accent));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .nova-card {
+    @apply min-w-0 rounded-3xl border border-line bg-card/80 backdrop-blur-xl;
+  }
+
+  .nova-panel {
+    @apply min-w-0 rounded-2xl border border-line bg-surface/70;
+  }
+
+  .nova-field {
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink
+      placeholder:text-faint transition-colors duration-150
+      hover:border-line-strong focus:border-accent/60 focus:outline-none
+      focus:ring-2 focus:ring-accent/25;
+  }
+
+  .nova-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/80
+      px-3 py-1.5 text-xs font-medium text-muted transition-all duration-150
+      hover:border-line-strong hover:text-ink;
+  }
+
+  .nova-scroll-fade {
+    mask-image: linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent);
+  }
+
+  /* Ambient background: fine grid + soft accent halo */
+  .nova-backdrop::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgb(var(--nova-grid) / var(--nova-grid-opacity)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--nova-grid) / var(--nova-grid-opacity)) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, black 10%, transparent 75%);
+  }
+
+  .nova-backdrop::after {
+    content: '';
+    position: fixed;
+    top: -22rem;
+    left: 50%;
+    height: 44rem;
+    width: min(76rem, 140vw);
+    transform: translateX(-50%);
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--nova-halo-opacity);
+    background: radial-gradient(
+      50% 50% at 50% 50%,
+      rgb(var(--nova-accent) / 0.16) 0%,
+      rgb(var(--nova-accent) / 0.05) 45%,
+      transparent 72%
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}

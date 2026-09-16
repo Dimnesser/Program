@@ -1,0 +1,38 @@
+{
+  "name": "nova",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NOVA — Everything you need. One place. A universal digital utility hub.",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run sitemap && tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "sitemap": "node scripts/generate-sitemap.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.15.0",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.468.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "tailwind-merge": "^2.5.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.3",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  }
+}

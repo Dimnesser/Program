@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="uk" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>NOVA — Усе потрібне в одному місці</title>
+    <meta
+      name="description"
+      content="NOVA — універсальний хаб щоденних інструментів: калькулятор, конвертери, QR-коди, стиснення зображень, текстові та developer-утиліти, нотатки й таймери. Працює у браузері, дані лишаються на вашому пристрої."
+    />
+    <meta name="theme-color" content="#07080d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="application-name" content="NOVA" />
+    <meta name="apple-mobile-web-app-title" content="NOVA" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="canonical" href="https://nova.tools/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NOVA" />
+    <meta property="og:title" content="NOVA — Усе потрібне в одному місці" />
+    <meta
+      property="og:description"
+      content="30+ щоденних інструментів в одному швидкому інтерфейсі. Усе працює прямо в браузері."
+    />
+    <meta property="og:url" content="https://nova.tools/" />
+    <meta property="og:image" content="/icons/icon-512.png" />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NOVA — Everything you need. One place." />
+    <meta
+      name="twitter:description"
+      content="30+ everyday tools in one fast, private workspace. Everything runs in your browser."
+    />
+    <meta name="twitter:image" content="/icons/icon-512.png" />
+
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/inter.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "NOVA",
+        "alternateName": "NOVA Utility Hub",
+        "url": "https://nova.tools/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "description": "A universal digital utility hub with 30+ everyday tools that run entirely in the browser.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": [
+          "Calculator",
+          "Unit Converter",
+          "QR Generator",
+          "Password Generator",
+          "Image Compressor",
+          "JSON Formatter",
+          "Notes",
+          "Pomodoro"
+        ]
+      }
+    </script>
+
+    <script>
+      /* Resolve the stored theme before first paint so there is no flash. */
+      (function () {
+        try {
+          var stored = localStorage.getItem('nova:theme');
+          var mode = stored ? JSON.parse(stored) : 'dark';
+          if (mode !== 'dark' && mode !== 'light') {
+            mode = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = mode;
+          var lang = localStorage.getItem('nova:language');
+          document.documentElement.lang = lang ? JSON.parse(lang) : 'uk';
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="padding: 40px; font-family: sans-serif; text-align: center">
+        NOVA потребує увімкненого JavaScript. / NOVA requires JavaScript to be enabled.
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
