@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const SITE = process.env.NOVA_SITE_URL ?? 'https://nova.tools';
+const SITE = (process.env.NOVA_SITE_URL ?? 'https://nova.tools').replace(/\/+$/, '');
 const registry = fs.readFileSync(path.resolve('src/data/tools.ts'), 'utf8');
 
 const toolRoutes = [...registry.matchAll(/route: '([^']+)'/g)].map((match) => match[1]);

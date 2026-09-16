@@ -9,6 +9,9 @@ import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/Toaster';
 import './index.css';
 
+/** '/Program/' on GitHub Pages, '/' on a domain root. */
+const BASE_URL = import.meta.env.BASE_URL;
+
 const container = document.getElementById('root');
 if (!container) throw new Error('Root element #root is missing from index.html');
 
@@ -17,7 +20,7 @@ createRoot(container).render(
     <I18nProvider>
       <ThemeProvider>
         <ToastProvider>
-          <BrowserRouter>
+          <BrowserRouter basename={BASE_URL.replace(/\/+$/, '')}>
             <CommandPaletteProvider>
               <App />
               <Toaster />
@@ -32,7 +35,7 @@ createRoot(container).render(
 /* Register the service worker for offline support (production builds only). */
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
+    navigator.serviceWorker.register(`${BASE_URL}sw.js`, { scope: BASE_URL }).catch(() => {
       /* Offline support is a progressive enhancement — failure is non-fatal. */
     });
   });

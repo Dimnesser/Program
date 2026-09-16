@@ -6,7 +6,7 @@
   "description": "NOVA — Everything you need. One place. A universal digital utility hub.",
   "scripts": {
     "dev": "vite",
-    "build": "npm run sitemap && tsc -b && vite build",
+    "build": "npm run sitemap && tsc -b && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "sitemap": "node scripts/generate-sitemap.mjs"

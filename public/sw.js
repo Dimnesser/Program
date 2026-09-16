@@ -1,18 +1,26 @@
 /* NOVA service worker — offline-first shell with a network-first HTML strategy. */
-const VERSION = 'nova-v1';
+const VERSION = 'nova-v2';
 const SHELL_CACHE = `${VERSION}-shell`;
 const ASSET_CACHE = `${VERSION}-assets`;
-const OFFLINE_URL = '/offline.html';
+
+/**
+ * The worker sits at the deployment root, so its own URL yields the base path.
+ * That keeps one file working at a domain root and under a subpath such as
+ * /Program/ on GitHub Pages.
+ */
+const BASE = new URL('./', self.location.href).pathname;
+const APP_SHELL = BASE;
+const OFFLINE_URL = `${BASE}offline.html`;
 
 const SHELL_ASSETS = [
-  '/',
-  '/offline.html',
-  '/manifest.webmanifest',
-  '/favicon.svg',
-  '/icons/icon-192.png',
-  '/fonts/inter.css',
-  '/fonts/inter-latin.woff2',
-  '/fonts/inter-cyrillic.woff2',
+  APP_SHELL,
+  OFFLINE_URL,
+  `${BASE}manifest.webmanifest`,
+  `${BASE}favicon.svg`,
+  `${BASE}icons/icon-192.png`,
+  `${BASE}fonts/inter.css`,
+  `${BASE}fonts/inter-latin.woff2`,
+  `${BASE}fonts/inter-cyrillic.woff2`,
 ];
 
 self.addEventListener('install', (event) => {
@@ -43,11 +51,11 @@ async function handleNavigation(request) {
   try {
     const fresh = await fetch(request);
     const cache = await caches.open(SHELL_CACHE);
-    cache.put('/', fresh.clone());
+    cache.put(APP_SHELL, fresh.clone());
     return fresh;
   } catch {
     const cache = await caches.open(SHELL_CACHE);
-    return (await cache.match('/')) || (await cache.match(OFFLINE_URL)) || Response.error();
+    return (await cache.match(APP_SHELL)) || (await cache.match(OFFLINE_URL)) || Response.error();
   }
 }
 

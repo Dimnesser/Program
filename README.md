@@ -75,6 +75,26 @@ via `preset` (that is how the eight unit converters and the text toolkit variant
 | `fetchRates()` | `src/features/converters/currencies.ts` | Set `VITE_RATES_ENDPOINT` to a `{ base, date, rates }` endpoint for live currency rates; built-in reference rates are the offline fallback. |
 | `StudyAnalyzer` | `src/features/study/analyzer.ts` | Summaries/flashcards are extractive and local; the interface is ready for a real model. |
 
+## Deployment
+
+The build targets either a domain root or a subpath, controlled by `VITE_BASE_PATH`:
+
+```bash
+npm run build                                   # domain root (Vercel, Cloudflare, custom domain)
+VITE_BASE_PATH=/Program/ npm run build          # subpath (GitHub Pages project site)
+```
+
+`NOVA_SITE_URL` sets the canonical and social-card host and the sitemap entries.
+
+**GitHub Pages** is wired up in `.github/workflows/deploy-pages.yml`: it builds with
+the repository name as the base path and publishes `dist/`. Pages requires a public
+repository on the free plan. Enable it under *Settings → Pages → Source: GitHub Actions*.
+
+Anything base-dependent resolves at runtime rather than being hardcoded: the service
+worker derives its own scope from `self.location`, the manifest uses relative URLs,
+the router takes `import.meta.env.BASE_URL` as its basename, and `postbuild.mjs`
+emits `404.html` so deep links survive a refresh on hosts without rewrite rules.
+
 ## Privacy
 
 Image, text, JSON, hashing and password tools use Canvas, Web Crypto and plain JS —

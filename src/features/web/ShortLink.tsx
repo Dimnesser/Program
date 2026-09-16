@@ -59,7 +59,7 @@ export default function ShortLink({ initial }: ToolProps) {
     success(t('toast.generated'));
   };
 
-  const shortUrl = (code: string) => `${window.location.origin}/s/${code}`;
+  const shortUrl = (code: string) => `${window.location.origin}${import.meta.env.BASE_URL}s/${code}`;
 
   return (
     <div className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
@@ -104,7 +104,7 @@ export default function ShortLink({ initial }: ToolProps) {
                   </button>
                   <div className="flex shrink-0 items-center gap-1">
                     <a
-                      href={`/s/${link.code}`}
+                      href={`${import.meta.env.BASE_URL}s/${link.code}`}
                       target="_blank"
                       rel="noreferrer noopener"
                       aria-label={t('common.open')}
