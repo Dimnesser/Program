@@ -16,9 +16,11 @@ import {
 } from 'lucide-react';
 import { useI18n, LANGUAGES } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
+import { usePreferences } from '@/hooks/usePreferences';
 import { useToast } from '@/hooks/useToast';
 import { clearAll, estimateUsage, exportAll, importAll, isStorageAvailable } from '@/lib/storage';
 import { Card, SectionHeader } from '@/components/ui/Card';
+import { Switch } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/Dialog';
 import { Badge } from '@/components/ui/Badge';
@@ -31,6 +33,7 @@ import type { Language, ThemeMode } from '@/types';
 export default function SettingsPage() {
   const { t, language, setLanguage } = useI18n();
   const { mode, setMode } = useTheme();
+  const preferences = usePreferences();
   const { success, error } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [usedBytes, setUsedBytes] = useState(() => estimateUsage());
@@ -118,6 +121,26 @@ export default function SettingsPage() {
               </button>
             );
           })}
+        </div>
+        <div className="mt-5 space-y-1 border-t border-line pt-4">
+          <Switch
+            checked={preferences.reduceMotion}
+            onChange={(checked) => {
+              preferences.set({ reduceMotion: checked });
+              success(t('toast.settingsSaved'));
+            }}
+            label={t('settings.motion')}
+            hint={t('settings.motionHint')}
+          />
+          <Switch
+            checked={preferences.compact}
+            onChange={(checked) => {
+              preferences.set({ compact: checked });
+              success(t('toast.settingsSaved'));
+            }}
+            label={t('settings.compact')}
+            hint={t('settings.compactHint')}
+          />
         </div>
       </Card>
 

@@ -2,7 +2,7 @@
 
 **Everything you need. One place.** — _Усе потрібне в одному місці._
 
-NOVA is a digital utility hub: 55 everyday tools — calculator, converters, QR codes,
+NOVA is a digital utility hub: 67 everyday tools — calculator, converters, QR codes,
 image compression, text and developer utilities, notes and timers — behind one fast
 interface with a command palette and a local smart search.
 
@@ -24,12 +24,16 @@ npm run preview  # serve the production build (service worker included)
   the right tool already filled in.
 - **Command palette** — `⌘/Ctrl + K` anywhere, with keyboard navigation and `g`-chords
   (`g` then `h` / `t` / `f` / `r` / `s`).
-- **55 tools across 8 categories**, each on its own route (`/tools/<id>`).
+- **67 tools across 8 categories**, each on its own route (`/tools/<id>`).
 - **Bilingual** — Ukrainian (default) and English, switchable everywhere.
 - **Dark-first theming** with a full, separately-designed light palette and a system option.
 - **PWA** — installable, with an offline app shell and cached tools.
+- **Batch image processing** — drop up to 40 photos into the compressor, resizer or
+  converter, process them in one pass and download the lot as a ZIP.
 - **Local-first** — favorites, history, notes, flashcards and stats live in `localStorage`
   and can be exported, imported or erased from Settings.
+- **Preferences that do something** — reduced motion and compact density are real
+  switches wired to `data-*` attributes, not decoration.
 
 ## Architecture
 
@@ -39,6 +43,7 @@ src/
   data/            tool registry + categories — the single source of truth for routing,
                    search, navigation and the palette
   features/        one self-contained module per tool (calculator, qr, image, json, …)
+                   image/ also holds the shared batch engine (useImageBatch + BatchList)
   hooks/           theme, i18n-adjacent state, favorites, recent, toasts, hotkeys
   lib/             calc engine, intent resolution, search ranking, storage, i18n, utils
   pages/           routed screens (landing, dashboard, tools, settings, privacy, …)
@@ -74,6 +79,8 @@ via `preset` (that is how the eight unit converters and the text toolkit variant
 | `resolveIntent()` | `src/lib/intent.ts` | Rules engine behind smart search. A hosted model can merge into the same `IntentMatch[]` contract. |
 | `fetchRates()` | `src/features/converters/currencies.ts` | Set `VITE_RATES_ENDPOINT` to a `{ base, date, rates }` endpoint for live currency rates; built-in reference rates are the offline fallback. |
 | `StudyAnalyzer` | `src/features/study/analyzer.ts` | Summaries/flashcards are extractive and local; the interface is ready for a real model. |
+| `useImageBatch()` | `src/features/image/useImageBatch.ts` | Queue, progress and ZIP export for any per-image operation — pass it a processor and it handles the rest. |
+| `createZip()` | `src/lib/zip.ts` | Dependency-free STORE-method ZIP writer used by the batch tools. |
 
 ## Deployment
 

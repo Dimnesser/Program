@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Download, FileImage, RotateCcw } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { Download, FileImage, Package, RotateCcw } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/hooks/useToast';
 import { Card } from '@/components/ui/Card';
@@ -9,50 +9,50 @@ import { Badge } from '@/components/ui/Badge';
 import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { downloadBlob, formatBytes } from '@/lib/utils';
 import { ImageDrop } from './ImageDrop';
-import { canvasToBlob, extensionFor, OUTPUT_FORMATS, renderToCanvas, type LoadedImage, type OutputFormat } from './imageUtils';
+import { BatchList } from './BatchList';
+import { MAX_BATCH, useImageBatch } from './useImageBatch';
+import {
+  canvasToBlob,
+  extensionFor,
+  OUTPUT_FORMATS,
+  renderToCanvas,
+  type LoadedImage,
+  type OutputFormat,
+} from './imageUtils';
 
 export default function ImageConverter() {
   const { t } = useI18n();
-  const { success, error } = useToast();
-
-  const [image, setImage] = useState<LoadedImage | null>(null);
+  const { success } = useToast();
   const [format, setFormat] = useState<OutputFormat>('image/webp');
   const [quality, setQuality] = useState(92);
-  const [result, setResult] = useState<{ blob: Blob; url: string } | null>(null);
-  const [busy, setBusy] = useState(false);
 
-  useEffect(() => () => {
-    if (result) URL.revokeObjectURL(result.url);
-  }, [result]);
-
-  const convert = async () => {
-    if (!image) return;
-    setBusy(true);
-    try {
+  const process = useCallback(
+    async (image: LoadedImage) => {
       const canvas = renderToCanvas(image.element, {
         width: image.width,
         height: image.height,
         background: format === 'image/jpeg' ? '#FFFFFF' : undefined,
       });
       const blob = await canvasToBlob(canvas, format, quality / 100);
-      if (!blob) {
-        error(t('error.title'));
-        return;
-      }
-      setResult((current) => {
-        if (current) URL.revokeObjectURL(current.url);
-        return { blob, url: URL.createObjectURL(blob) };
-      });
-      success(t('toast.generated'));
-    } finally {
-      setBusy(false);
-    }
-  };
+      if (!blob) return null;
+      return {
+        blob,
+        width: canvas.width,
+        height: canvas.height,
+        name: `${image.name.replace(/\.[^.]+$/, '')}.${extensionFor(format)}`,
+      };
+    },
+    [format, quality],
+  );
 
-  if (!image) {
+  const batch = useImageBatch(process);
+  const ready = batch.items.filter((item) => item.result).length;
+
+  if (batch.items.length === 0) {
     return (
       <div className="space-y-5">
-        <ImageDrop onLoad={([loaded]) => setImage(loaded)} />
+        <ImageDrop multiple onLoad={batch.add} />
+        <p className="text-center text-[12px] text-faint">{t('batch.max', { max: MAX_BATCH })}</p>
         <PrivacyBadge />
       </div>
     );
@@ -60,31 +60,27 @@ export default function ImageConverter() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <Card className="p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <span className="truncate text-[13px] font-medium text-muted">{image.name}</span>
-          <div className="flex shrink-0 gap-1.5">
-            <Badge>{image.type.replace('image/', '').toUpperCase()}</Badge>
-            <Badge>{formatBytes(image.size)}</Badge>
-          </div>
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge>{batch.items.length} {t('batch.files')}</Badge>
+          <Badge>{formatBytes(batch.totals.originalBytes)}</Badge>
+          {ready > 0 ? <Badge tone="success">→ {formatBytes(batch.totals.resultBytes)}</Badge> : null}
         </div>
-        <div className="flex min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-line bg-surface/50 p-4">
-          <img
-            src={result?.url ?? image.dataUrl}
-            alt={t('common.preview')}
-            className="max-h-[420px] max-w-full object-contain"
-          />
-        </div>
-        {result ? (
-          <p className="mt-3 font-mono text-[11px] text-faint">
-            {extensionFor(format).toUpperCase()} · {formatBytes(result.blob.size)} (
-            {result.blob.size < image.size ? '−' : '+'}
-            {Math.abs(Math.round((1 - result.blob.size / image.size) * 100))}%)
-          </p>
-        ) : null}
-      </Card>
 
-      <Card className="space-y-4">
+        {batch.busy ? (
+          <div className="h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={batch.progress}>
+            <div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${batch.progress}%` }} />
+          </div>
+        ) : null}
+
+        <Card className="p-3">
+          <BatchList items={batch.items} onRemove={batch.remove} />
+        </Card>
+
+        <ImageDrop multiple compact onLoad={batch.add} />
+      </div>
+
+      <Card className="space-y-4 lg:sticky lg:top-20 lg:self-start">
         <div>
           <span className="mb-1.5 block text-[13px] font-medium text-muted">{t('img.outputFormat')}</span>
           <Segmented
@@ -103,36 +99,44 @@ export default function ImageConverter() {
           <Button
             variant="primary"
             block
-            loading={busy}
+            loading={batch.busy}
             icon={<FileImage className="h-4 w-4" />}
-            onClick={() => void convert()}
+            onClick={() => void batch.run()}
           >
-            {t('common.apply')}
+            {batch.items.length > 1 ? t('batch.processAll', { count: batch.items.length }) : t('common.apply')}
           </Button>
-          <Button
-            block
-            disabled={!result}
-            icon={<Download className="h-4 w-4" />}
-            onClick={() => {
-              if (!result) return;
-              downloadBlob(result.blob, `${image.name.replace(/\.[^.]+$/, '')}.${extensionFor(format)}`);
-              success(t('toast.downloaded'));
-            }}
-          >
-            {t('common.download')}
-          </Button>
-          <Button
-            block
-            variant="ghost"
-            icon={<RotateCcw className="h-4 w-4" />}
-            onClick={() => {
-              setResult((current) => {
-                if (current) URL.revokeObjectURL(current.url);
-                return null;
-              });
-              setImage(null);
-            }}
-          >
+
+          {batch.items.length > 1 ? (
+            <Button
+              block
+              disabled={ready === 0}
+              icon={<Package className="h-4 w-4" />}
+              onClick={async () => {
+                const archive = await batch.downloadZip(`nova-converted-${Date.now()}.zip`);
+                if (!archive) return;
+                downloadBlob(archive.blob, archive.name);
+                success(t('toast.downloaded'));
+              }}
+            >
+              {t('batch.downloadZip')}
+            </Button>
+          ) : (
+            <Button
+              block
+              disabled={ready === 0}
+              icon={<Download className="h-4 w-4" />}
+              onClick={() => {
+                const item = batch.items.find((entry) => entry.result);
+                if (!item?.result) return;
+                downloadBlob(item.result.blob, item.result.name);
+                success(t('toast.downloaded'));
+              }}
+            >
+              {t('common.download')}
+            </Button>
+          )}
+
+          <Button block variant="ghost" icon={<RotateCcw className="h-4 w-4" />} onClick={batch.clear}>
             {t('common.reset')}
           </Button>
         </div>

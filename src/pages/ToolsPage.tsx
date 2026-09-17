@@ -5,6 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import { categories } from '@/data/categories';
 import { tools } from '@/data/tools';
 import { searchTools } from '@/lib/search';
+import { usePreferences } from '@/hooks/usePreferences';
 import { ToolCard } from '@/components/ToolCard';
 import { EmptyState } from '@/components/ui/States';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -15,6 +16,7 @@ export default function ToolsPage() {
   const { t, tl, language } = useI18n();
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState('');
+  const { compact } = usePreferences();
   useDocumentTitle(t('tools.title'), t('tools.subtitle'));
 
   const activeCategory = (params.get('category') as CategoryId | null) ?? null;
@@ -125,9 +127,9 @@ export default function ToolsPage() {
                   </div>
                   <span className="ml-auto text-xs text-faint">{items.length}</span>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                <div className={cn('grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4', compact && 'gap-2 lg:grid-cols-4 2xl:grid-cols-6')}>
                   {items.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
+                    <ToolCard key={tool.id} tool={tool} compact={compact} />
                   ))}
                 </div>
               </section>
@@ -135,9 +137,9 @@ export default function ToolsPage() {
           })}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        <div className={cn('grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4', compact && 'gap-2 lg:grid-cols-4 2xl:grid-cols-6')}>
           {visible.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
+            <ToolCard key={tool.id} tool={tool} compact={compact} />
           ))}
         </div>
       )}

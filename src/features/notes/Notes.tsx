@@ -32,6 +32,15 @@ export default function Notes() {
       .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
   }, [notes, query]);
 
+  const groups = useMemo(() => {
+    const pinned = sorted.filter((note) => note.pinned);
+    const others = sorted.filter((note) => !note.pinned);
+    return [
+      { key: 'notes.pinned' as const, items: pinned },
+      { key: 'notes.others' as const, items: others },
+    ].filter((group) => group.items.length > 0);
+  }, [sorted]);
+
   const active = notes.find((note) => note.id === activeId) ?? null;
 
   const create = () => {
@@ -103,7 +112,15 @@ export default function Notes() {
             />
           ) : (
             <ul className="space-y-1">
-              {sorted.map((note) => (
+              {groups.map((group) => (
+                <li key={group.key}>
+                  {groups.length > 1 ? (
+                    <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-faint">
+                      {t(group.key)}
+                    </p>
+                  ) : null}
+                  <ul className="space-y-1">
+                    {group.items.map((note) => (
                 <li key={note.id}>
                   <button
                     type="button"
@@ -127,6 +144,9 @@ export default function Notes() {
                     </span>
                     <span className="mt-1 block text-[11px] text-faint">{formatDate(note.updatedAt)}</span>
                   </button>
+                </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>

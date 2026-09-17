@@ -305,7 +305,7 @@ export default function QrGenerator({ initial }: ToolProps) {
           </Button>
           <div className="grid grid-cols-2 gap-2">
             <Button disabled={!svgMarkup} icon={<Download className="h-4 w-4" />} onClick={downloadSvg}>
-              SVG
+              {t('qr.downloadSvg')}
             </Button>
             <Button disabled={!payload} icon={<Copy className="h-4 w-4" />} onClick={() => void copyImage()}>
               {t('common.copy')}

@@ -24,11 +24,14 @@ import {
   Star,
   Sun,
   Clock,
+  History,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useRecent } from '@/hooks/useRecent';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { StorageKeys } from '@/lib/storage';
 import { searchTools } from '@/lib/search';
 import { resolveIntent } from '@/lib/intent';
 import { popularTools, toolMap } from '@/data/tools';
@@ -71,6 +74,7 @@ export function useCommandPalette(): PaletteContextValue {
 }
 
 type Item =
+  | { kind: 'search'; id: string; query: string }
   | { kind: 'tool'; id: string; tool: Tool; hint?: string }
   | { kind: 'action'; id: string; label: string; icon: ReactNode; run: () => void; hint?: string }
   | { kind: 'route'; id: string; label: string; icon: ReactNode; to: string; hint?: string };
@@ -83,6 +87,7 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
   const { toggle: toggleTheme, resolved } = useTheme();
   const { favorites } = useFavorites();
   const { recent } = useRecent();
+  const [searches, setSearches] = useLocalStorage<string[]>(StorageKeys.searches, []);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -137,6 +142,12 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
     ];
 
     if (!trimmed) {
+      const pastSearches = searches.slice(0, 3).map<Item>((entry) => ({
+        kind: 'search',
+        id: `q-${entry}`,
+        query: entry,
+      }));
+
       const favoriteTools = favorites
         .map((id) => toolMap.get(id))
         .filter((tool): tool is Tool => Boolean(tool))
@@ -155,7 +166,7 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
         .slice(0, 6)
         .map<Item>((tool) => ({ kind: 'tool', id: `p-${tool.id}`, tool, hint: t('common.popular') }));
 
-      return [...favoriteTools, ...recentTools, ...fill, ...routes, ...actions];
+      return [...pastSearches, ...favoriteTools, ...recentTools, ...fill, ...routes, ...actions];
     }
 
     const intentTools = intents
@@ -183,14 +194,28 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
     );
 
     return [...toolItems, ...matchingRoutes, ...matchingActions];
-  }, [query, language, favorites, recent, intents, t, tl, resolved, toggleTheme, setLanguage]);
+  }, [query, language, favorites, recent, intents, searches, t, tl, resolved, toggleTheme, setLanguage]);
 
   useEffect(() => {
     setActive(0);
   }, [query]);
 
+  const remember = useCallback(
+    (value: string) => {
+      const trimmed = value.trim();
+      if (trimmed.length < 2) return;
+      setSearches((current) => [trimmed, ...current.filter((entry) => entry !== trimmed)].slice(0, 6));
+    },
+    [setSearches],
+  );
+
   const run = useCallback(
     (item: Item) => {
+      if (item.kind === 'search') {
+        setQuery(item.query);
+        return;
+      }
+      remember(query);
       if (item.kind === 'tool') {
         const intent = intents.find((entry) => entry.toolId === item.tool.id);
         navigate(item.tool.route, intent?.initial ? { state: { initial: intent.initial } } : undefined);
@@ -201,7 +226,7 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
       }
       onClose();
     },
-    [intents, navigate, onClose],
+    [intents, navigate, onClose, remember, query],
   );
 
   useEffect(() => {
@@ -308,7 +333,11 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                 items.map((item, index) => {
                   const isActive = index === active;
                   const label =
-                    item.kind === 'tool' ? tl(item.tool.name) : item.kind === 'route' ? item.label : item.label;
+                    item.kind === 'tool'
+                      ? tl(item.tool.name)
+                      : item.kind === 'search'
+                        ? item.query
+                        : item.label;
                   const Icon = item.kind === 'tool' ? item.tool.icon : null;
                   const tint = item.kind === 'tool' ? categoryMap.get(item.tool.category)?.tint : undefined;
 
@@ -331,7 +360,13 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                         )}
                         style={tint ? { color: tint } : undefined}
                       >
-                        {Icon ? <Icon className="h-4 w-4" strokeWidth={1.9} /> : item.kind !== 'tool' ? item.icon : null}
+                        {Icon ? (
+                          <Icon className="h-4 w-4" strokeWidth={1.9} />
+                        ) : item.kind === 'search' ? (
+                          <History className="h-4 w-4" />
+                        ) : item.kind === 'route' || item.kind === 'action' ? (
+                          item.icon
+                        ) : null}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13.5px] font-medium text-ink">{label}</span>
@@ -339,7 +374,11 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                           <span className="block truncate text-xs text-muted">{tl(item.tool.description)}</span>
                         ) : null}
                       </span>
-                      {item.hint ? (
+                      {item.kind === 'search' ? (
+                        <span className="hidden shrink-0 text-[11px] text-faint sm:block">
+                          {t('search.recentSearches')}
+                        </span>
+                      ) : item.hint ? (
                         <span className="hidden shrink-0 text-[11px] text-faint sm:block">{item.hint}</span>
                       ) : null}
                       {isActive ? (

@@ -29,6 +29,11 @@
     --nova-grid: 255 255 255;
     --nova-grid-opacity: 0.022;
     --nova-halo-opacity: 0.5;
+    /* A hairline of light along the top edge, the way a lit surface behaves. */
+    --nova-edge: inset 0 1px 0 rgb(255 255 255 / 0.05);
+    --nova-card-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.028), transparent 38%);
+    --nova-elevation: 0 1px 2px rgb(0 0 0 / 0.28), 0 12px 32px -18px rgb(0 0 0 / 0.55);
+    --nova-elevation-hover: 0 2px 4px rgb(0 0 0 / 0.3), 0 22px 48px -22px rgb(0 0 0 / 0.7);
   }
 
   [data-theme='light'] {
@@ -51,6 +56,10 @@
     --nova-grid: 15 23 42;
     --nova-grid-opacity: 0.032;
     --nova-halo-opacity: 0.22;
+    --nova-edge: inset 0 1px 0 rgb(255 255 255 / 0.9);
+    --nova-card-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.6), transparent 40%);
+    --nova-elevation: 0 1px 2px rgb(15 23 42 / 0.06), 0 10px 26px -16px rgb(15 23 42 / 0.22);
+    --nova-elevation-hover: 0 2px 6px rgb(15 23 42 / 0.08), 0 20px 42px -20px rgb(15 23 42 / 0.3);
   }
 
   * {
@@ -88,6 +97,19 @@
   h1, h2, h3, h4 {
     @apply font-semibold tracking-[-0.02em];
     text-wrap: balance;
+  }
+
+  /* Large type needs tighter tracking to stay optically even. */
+  .nova-display {
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+    font-weight: 620;
+  }
+
+  /* Figures line up in tables and stat tiles. */
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 
   /* Custom scrollbars */
@@ -171,11 +193,49 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* The same treatment when the switch in Settings is on. */
+  [data-motion='reduced'] *,
+  [data-motion='reduced'] *::before,
+  [data-motion='reduced'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @layer components {
   .nova-card {
-    @apply min-w-0 rounded-3xl border border-line bg-card/80 backdrop-blur-xl;
+    @apply relative min-w-0 rounded-3xl border border-line bg-card/80 backdrop-blur-xl;
+    box-shadow: var(--nova-edge), var(--nova-elevation);
+  }
+
+  /* The sheen sits above the background but below content. */
+  .nova-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--nova-card-sheen);
+    pointer-events: none;
+  }
+
+  .nova-card > * {
+    position: relative;
+  }
+
+  .nova-interactive {
+    transition:
+      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .nova-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--nova-edge), var(--nova-elevation-hover);
   }
 
   .nova-panel {
@@ -187,6 +247,26 @@
       placeholder:text-faint transition-colors duration-150
       hover:border-line-strong focus:border-accent/60 focus:outline-none
       focus:ring-2 focus:ring-accent/25;
+  }
+
+  .nova-glyph {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .nova-glyph::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    z-index: -1;
+    border-radius: 999px;
+    background: radial-gradient(circle, currentColor 0%, transparent 68%);
+    opacity: 0.12;
+    transition: opacity 0.2s ease;
+  }
+
+  .group:hover .nova-glyph::after {
+    opacity: 0.24;
   }
 
   .nova-chip {

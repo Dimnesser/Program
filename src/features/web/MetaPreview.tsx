@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Code2, Globe, Search } from 'lucide-react';
+import { Code2, Globe, Search, Twitter } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/hooks/useToast';
 import { Card } from '@/components/ui/Card';
@@ -100,13 +100,13 @@ export default function MetaPreview() {
       <div className="space-y-5">
         <Card className="space-y-3">
           <Input
-            label={t('meta.title')}
+            label={`${t('meta.title')} · ${t('meta.titleLength')}`}
             value={meta.title}
             onChange={(event) => setMeta({ ...meta, title: event.target.value })}
             hint={lengthBadge(meta.title.length, LIMITS.title)}
           />
           <Textarea
-            label={t('meta.description')}
+            label={`${t('meta.description')} · ${t('meta.descLength')}`}
             value={meta.description}
             onChange={(event) => setMeta({ ...meta, description: event.target.value })}
             hint={lengthBadge(meta.description.length, LIMITS.description)}
@@ -194,6 +194,29 @@ export default function MetaPreview() {
               <p className="mt-0.5 line-clamp-2 text-[12px] text-muted">{meta.description || '—'}</p>
             </div>
           </div>
+        </Card>
+
+        {/* X / Twitter card */}
+        <Card>
+          <h2 className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink">
+            <Twitter className="h-4 w-4 text-accent" />
+            {t('meta.twitter')}
+          </h2>
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface/60">
+            {meta.image ? (
+              <div className="aspect-[2/1] bg-elevated">
+                <img src={meta.image} alt="" className="h-full w-full object-cover" />
+              </div>
+            ) : null}
+            <div className={cn('px-3.5 py-3', meta.image && 'border-t border-line')}>
+              <p className="line-clamp-1 text-[14px] font-medium text-ink">{meta.title || '—'}</p>
+              <p className="mt-0.5 line-clamp-2 text-[12px] text-muted">{meta.description || '—'}</p>
+              <p className="mt-1.5 truncate text-[11px] text-faint">{host}</p>
+            </div>
+          </div>
+          <p className="mt-2 text-[11px] text-faint">
+            {meta.image ? 'summary_large_image' : 'summary'}
+          </p>
         </Card>
 
         <Card>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Check, Download, Minimize2, Sparkles, Trash2 } from 'lucide-react';
+import { AlertTriangle, Check, Download, Minimize2, Quote, Sparkles, Trash2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/hooks/useToast';
 import { Card } from '@/components/ui/Card';
@@ -36,6 +36,27 @@ export default function JsonFormatter({ preset, initial }: ToolProps) {
 
   const stats = useMemo(() => (parsed?.ok ? inspectJson(parsed.value) : null), [parsed]);
   const highlighted = useMemo(() => (output ? highlightJson(output) : ''), [output]);
+
+  /** Turns the document into a JSON string literal, and back again. */
+  const escape = () => {
+    if (!input.trim()) return;
+    setOutput(JSON.stringify(input));
+    success(t('json.escape'));
+  };
+
+  const unescape = () => {
+    try {
+      const value = JSON.parse(input.trim());
+      if (typeof value !== 'string') {
+        error(t('json.invalid'));
+        return;
+      }
+      setInput(value);
+      success(t('json.unescape'));
+    } catch {
+      error(t('json.invalid'));
+    }
+  };
 
   const minify = () => {
     if (!parsed?.ok) {
@@ -163,6 +184,12 @@ export default function JsonFormatter({ preset, initial }: ToolProps) {
               </Button>
               <Button size="sm" icon={<Minimize2 className="h-3.5 w-3.5" />} onClick={minify}>
                 {t('json.minify')}
+              </Button>
+              <Button size="sm" icon={<Quote className="h-3.5 w-3.5" />} onClick={escape}>
+                {t('json.escape')}
+              </Button>
+              <Button size="sm" onClick={unescape}>
+                {t('json.unescape')}
               </Button>
             </>
           ) : null}

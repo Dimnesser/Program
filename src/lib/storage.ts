@@ -24,6 +24,7 @@ export const StorageKeys = {
   sidebar: 'sidebar-collapsed',
   settings: 'settings',
   counter: 'counter',
+  searches: 'recent-searches',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];

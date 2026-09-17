@@ -8,6 +8,7 @@ import { categories } from '@/data/categories';
 import { popularTools, tools } from '@/data/tools';
 import { Logo } from '@/components/Logo';
 import { ToolCard } from '@/components/ToolCard';
+import { PalettePreview } from '@/components/PalettePreview';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { Kbd } from '@/components/ui/Badge';
 import { Footer } from '@/components/layout/Footer';
@@ -91,7 +92,7 @@ export default function Landing() {
             {t('landing.badge')}
           </span>
 
-          <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-6xl">
+          <h1 className="nova-display mx-auto mt-6 max-w-3xl text-balance text-[42px] text-ink sm:text-[64px]">
             {t('landing.title')}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-balance text-[17px] leading-relaxed text-muted">
@@ -113,19 +114,27 @@ export default function Landing() {
             </Button>
           </div>
 
-          <p className="mt-6 flex items-center justify-center gap-2 text-[13px] text-faint">
+          <div className="relative mx-auto mt-14 max-w-xl">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-10 -top-8 bottom-0 rounded-[40px] bg-accent/[0.07] blur-3xl"
+            />
+            <PalettePreview />
+          </div>
+
+          <p className="mt-5 flex items-center justify-center gap-2 text-[13px] text-faint">
             <Kbd>⌘</Kbd>
             <Kbd>K</Kbd>
             <span>{t('shortcuts.palette')}</span>
           </p>
 
-          <dl className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-3">
+          <dl className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-3">
             {[
               { value: `${tools.length}+`, label: t('about.toolsCount') },
               { value: String(categories.length), label: t('about.categoriesCount') },
               { value: '0', label: t('about.serversCount') },
             ].map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-line bg-card/60 px-3 py-4 backdrop-blur-xl">
+              <div key={stat.label} className="nova-card rounded-2xl px-3 py-4">
                 <dt className="text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-3xl">{stat.value}</dt>
                 <dd className="mt-1 text-[11px] leading-snug text-muted sm:text-xs">{stat.label}</dd>
               </div>
@@ -151,7 +160,7 @@ export default function Landing() {
             {WHY.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.titleKey} className="rounded-2xl border border-line bg-card/60 p-5 backdrop-blur-xl">
+                <div key={item.titleKey} className="nova-card rounded-2xl p-5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface text-accent">
                     <Icon className="h-4 w-4" />
                   </span>
@@ -165,7 +174,7 @@ export default function Landing() {
 
         {/* Privacy */}
         <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <div className="flex flex-col gap-6 rounded-3xl border border-line bg-card/60 p-6 backdrop-blur-xl sm:p-10 lg:flex-row lg:items-center">
+          <div className="nova-card flex flex-col gap-6 rounded-3xl p-6 sm:p-10 lg:flex-row lg:items-center">
             <div className="flex-1">
               <span className="inline-flex items-center gap-2 rounded-full border border-success/25 bg-success/[0.08] px-3 py-1 text-[12px] font-medium text-success">
                 <Lock className="h-3.5 w-3.5" />
@@ -205,7 +214,7 @@ export default function Landing() {
                   key={category.id}
                   type="button"
                   onClick={() => enter(`/tools?category=${category.id}`)}
-                  className="group rounded-2xl border border-line bg-card/60 p-5 text-left backdrop-blur-xl transition-all duration-200 ease-nova hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift"
+                  className="nova-card nova-interactive group rounded-2xl p-5 text-left hover:border-line-strong"
                 >
                   <span
                     className="flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface"
@@ -225,7 +234,7 @@ export default function Landing() {
         {/* FAQ */}
         <section className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
           <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">{t('landing.faq')}</h2>
-          <div className="mt-5 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card/60 backdrop-blur-xl">
+          <div className="nova-card mt-5 divide-y divide-line overflow-hidden rounded-2xl">
             {FAQ.map((item, index) => {
               const open = openFaq === index;
               return (

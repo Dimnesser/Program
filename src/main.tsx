@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { I18nProvider } from '@/lib/i18n';
 import { ThemeProvider } from '@/hooks/useTheme';
+import { PreferencesProvider } from '@/hooks/usePreferences';
 import { ToastProvider } from '@/hooks/useToast';
 import { CommandPaletteProvider } from '@/components/CommandPalette';
 import { Toaster } from '@/components/ui/Toaster';
@@ -19,6 +20,7 @@ createRoot(container).render(
   <StrictMode>
     <I18nProvider>
       <ThemeProvider>
+        <PreferencesProvider>
         <ToastProvider>
           <BrowserRouter basename={BASE_URL.replace(/\/+$/, '')}>
             <CommandPaletteProvider>
@@ -27,6 +29,7 @@ createRoot(container).render(
             </CommandPaletteProvider>
           </BrowserRouter>
         </ToastProvider>
+        </PreferencesProvider>
       </ThemeProvider>
     </I18nProvider>
   </StrictMode>,

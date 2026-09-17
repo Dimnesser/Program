@@ -1,17 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Crop, Download, RotateCcw } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { Crop, Download, Package, RotateCcw } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/hooks/useToast';
 import { Card } from '@/components/ui/Card';
-import { Checkbox, Input, Segmented } from '@/components/ui/Field';
+import { Input, Segmented } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { downloadBlob, formatBytes, clamp } from '@/lib/utils';
 import { ImageDrop } from './ImageDrop';
+import { BatchList } from './BatchList';
+import { MAX_BATCH, useImageBatch } from './useImageBatch';
 import {
   canvasToBlob,
   extensionFor,
+  fitDimensions,
   OUTPUT_FORMATS,
   renderToCanvas,
   RESIZE_PRESETS,
@@ -20,77 +23,54 @@ import {
 } from './imageUtils';
 import type { ToolProps } from '@/types';
 
+type Mode = 'fit' | 'exact';
+
 export default function ImageResizer({ initial }: ToolProps) {
   const { t } = useI18n();
-  const { success, error } = useToast();
+  const { success } = useToast();
 
-  const [image, setImage] = useState<LoadedImage | null>(null);
+  const [mode, setMode] = useState<Mode>('fit');
   const [width, setWidth] = useState(initial?.width ?? '1920');
   const [height, setHeight] = useState(initial?.height ?? '1080');
-  const [lockRatio, setLockRatio] = useState(true);
   const [format, setFormat] = useState<OutputFormat>('image/png');
-  const [result, setResult] = useState<{ blob: Blob; url: string } | null>(null);
-  const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!image) return;
-    setWidth(String(image.width));
-    setHeight(String(image.height));
-    setFormat(image.type === 'image/jpeg' ? 'image/jpeg' : 'image/png');
-  }, [image]);
+  const process = useCallback(
+    async (image: LoadedImage) => {
+      const targetWidth = clamp(Number(width) || image.width, 1, 12000);
+      const targetHeight = clamp(Number(height) || image.height, 1, 12000);
 
-  useEffect(() => () => {
-    if (result) URL.revokeObjectURL(result.url);
-  }, [result]);
+      // "Fit" keeps each image's own aspect ratio inside the box; "exact" forces the size.
+      const size =
+        mode === 'fit'
+          ? fitDimensions(image.width, image.height, targetWidth, targetHeight)
+          : { width: targetWidth, height: targetHeight };
 
-  const ratio = image ? image.width / image.height : 1;
-
-  const changeWidth = (value: string) => {
-    setWidth(value);
-    const numeric = Number(value);
-    if (lockRatio && Number.isFinite(numeric) && numeric > 0) {
-      setHeight(String(Math.round(numeric / ratio)));
-    }
-  };
-
-  const changeHeight = (value: string) => {
-    setHeight(value);
-    const numeric = Number(value);
-    if (lockRatio && Number.isFinite(numeric) && numeric > 0) {
-      setWidth(String(Math.round(numeric * ratio)));
-    }
-  };
-
-  const resize = async () => {
-    if (!image) return;
-    const targetWidth = clamp(Number(width) || 0, 1, 12000);
-    const targetHeight = clamp(Number(height) || 0, 1, 12000);
-    setBusy(true);
-    try {
       const canvas = renderToCanvas(image.element, {
-        width: targetWidth,
-        height: targetHeight,
+        width: size.width,
+        height: size.height,
         background: format === 'image/jpeg' ? '#FFFFFF' : undefined,
       });
       const blob = await canvasToBlob(canvas, format, 0.92);
-      if (!blob) {
-        error(t('error.title'));
-        return;
-      }
-      setResult((current) => {
-        if (current) URL.revokeObjectURL(current.url);
-        return { blob, url: URL.createObjectURL(blob) };
-      });
-      success(t('toast.generated'));
-    } finally {
-      setBusy(false);
-    }
-  };
+      if (!blob) return null;
 
-  if (!image) {
+      return {
+        blob,
+        width: canvas.width,
+        height: canvas.height,
+        name: `${image.name.replace(/\.[^.]+$/, '')}-${canvas.width}x${canvas.height}.${extensionFor(format)}`,
+      };
+    },
+    [mode, width, height, format],
+  );
+
+  const batch = useImageBatch(process);
+  const ready = batch.items.filter((item) => item.result).length;
+
+  if (batch.items.length === 0) {
     return (
       <div className="space-y-5">
-        <ImageDrop onLoad={([loaded]) => setImage(loaded)} />
+        <ImageDrop multiple onLoad={batch.add} />
+        <p className="text-center text-[12px] text-faint">{t('batch.max', { max: MAX_BATCH })}</p>
         <PrivacyBadge />
       </div>
     );
@@ -98,57 +78,68 @@ export default function ImageResizer({ initial }: ToolProps) {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <Card className="p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <span className="truncate text-[13px] font-medium text-muted">{image.name}</span>
-          <Badge>{formatBytes(image.size)}</Badge>
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge>{batch.items.length} {t('batch.files')}</Badge>
+          <Badge>{formatBytes(batch.totals.originalBytes)}</Badge>
+          {ready > 0 ? <Badge tone="success">→ {formatBytes(batch.totals.resultBytes)}</Badge> : null}
         </div>
-        <div className="flex min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-line bg-surface/50 p-4">
-          <img
-            src={result?.url ?? image.dataUrl}
-            alt={t('common.preview')}
-            className="max-h-[420px] max-w-full object-contain"
-          />
-        </div>
-        <p className="mt-3 font-mono text-[11px] text-faint">
-          {image.width} × {image.height} → {width} × {height}
-          {result ? ` · ${formatBytes(result.blob.size)}` : ''}
-        </p>
-      </Card>
 
-      <Card className="space-y-4">
+        {batch.busy ? (
+          <div className="h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={batch.progress}>
+            <div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${batch.progress}%` }} />
+          </div>
+        ) : null}
+
+        <Card className="p-3">
+          <BatchList items={batch.items} onRemove={batch.remove} />
+        </Card>
+
+        <ImageDrop multiple compact onLoad={batch.add} />
+      </div>
+
+      <Card className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+        <div>
+          <span className="mb-1.5 block text-[13px] font-medium text-muted">{t('resize.mode')}</span>
+          <Segmented
+            value={mode}
+            onChange={setMode}
+            ariaLabel={t('resize.mode')}
+            options={[
+              { value: 'fit', label: t('resize.fit') },
+              { value: 'exact', label: t('resize.exact') },
+            ]}
+          />
+          <p className="mt-1.5 px-1 text-[11px] leading-relaxed text-faint">
+            {mode === 'fit' ? t('resize.fitHint') : t('resize.exactHint')}
+          </p>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <Input
-            label={t('common.width')}
+            label={mode === 'fit' ? t('resize.maxWidth') : t('common.width')}
             value={width}
-            onChange={(event) => changeWidth(event.target.value)}
+            onChange={(event) => setWidth(event.target.value)}
             inputMode="numeric"
           />
           <Input
-            label={t('common.height')}
+            label={mode === 'fit' ? t('resize.maxHeight') : t('common.height')}
             value={height}
-            onChange={(event) => changeHeight(event.target.value)}
+            onChange={(event) => setHeight(event.target.value)}
             inputMode="numeric"
           />
         </div>
-
-        <Checkbox checked={lockRatio} onChange={setLockRatio} label={t('img.keepRatio')} />
 
         <div>
           <span className="mb-1.5 block text-[13px] font-medium text-muted">{t('img.presets')}</span>
           <div className="flex flex-wrap gap-2">
-            {RESIZE_PRESETS.map((preset) => (
+            {RESIZE_PRESETS.filter((preset) => preset.width > 0).map((preset) => (
               <button
                 key={preset.id}
                 type="button"
                 onClick={() => {
-                  if (preset.width === 0) {
-                    setWidth(String(image.width));
-                    setHeight(String(image.height));
-                    return;
-                  }
                   setWidth(String(preset.width));
-                  setHeight(String(lockRatio ? Math.round(preset.width / ratio) : preset.height));
+                  setHeight(String(preset.height));
                 }}
                 className="nova-chip"
               >
@@ -169,33 +160,41 @@ export default function ImageResizer({ initial }: ToolProps) {
         </div>
 
         <div className="grid gap-2 border-t border-line pt-4">
-          <Button variant="primary" block loading={busy} icon={<Crop className="h-4 w-4" />} onClick={() => void resize()}>
-            {t('img.resize')}
+          <Button variant="primary" block loading={batch.busy} icon={<Crop className="h-4 w-4" />} onClick={() => void batch.run()}>
+            {batch.items.length > 1 ? t('batch.processAll', { count: batch.items.length }) : t('img.resize')}
           </Button>
-          <Button
-            block
-            disabled={!result}
-            icon={<Download className="h-4 w-4" />}
-            onClick={() => {
-              if (!result) return;
-              downloadBlob(result.blob, `${image.name.replace(/\.[^.]+$/, '')}-${width}x${height}.${extensionFor(format)}`);
-              success(t('toast.downloaded'));
-            }}
-          >
-            {t('common.download')}
-          </Button>
-          <Button
-            block
-            variant="ghost"
-            icon={<RotateCcw className="h-4 w-4" />}
-            onClick={() => {
-              setResult((current) => {
-                if (current) URL.revokeObjectURL(current.url);
-                return null;
-              });
-              setImage(null);
-            }}
-          >
+
+          {batch.items.length > 1 ? (
+            <Button
+              block
+              disabled={ready === 0}
+              icon={<Package className="h-4 w-4" />}
+              onClick={async () => {
+                const archive = await batch.downloadZip(`nova-resized-${Date.now()}.zip`);
+                if (!archive) return;
+                downloadBlob(archive.blob, archive.name);
+                success(t('toast.downloaded'));
+              }}
+            >
+              {t('batch.downloadZip')}
+            </Button>
+          ) : (
+            <Button
+              block
+              disabled={ready === 0}
+              icon={<Download className="h-4 w-4" />}
+              onClick={() => {
+                const item = batch.items.find((entry) => entry.result);
+                if (!item?.result) return;
+                downloadBlob(item.result.blob, item.result.name);
+                success(t('toast.downloaded'));
+              }}
+            >
+              {t('common.download')}
+            </Button>
+          )}
+
+          <Button block variant="ghost" icon={<RotateCcw className="h-4 w-4" />} onClick={batch.clear}>
             {t('common.reset')}
           </Button>
         </div>

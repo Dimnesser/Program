@@ -1,11 +1,15 @@
 import { lazy } from 'react';
 import {
+  AlarmClock,
   ArrowDownUp,
   Baseline,
   Binary,
+  Braces,
+  CalendarDays,
   Calculator as CalculatorIcon,
   CaseSensitive,
   Clock,
+  Code,
   Coins,
   Crop,
   Database,
@@ -14,22 +18,28 @@ import {
   Eraser,
   FileCode2,
   FileImage,
+  FileKey,
   FileText,
   Fingerprint,
   Flame,
   Gauge,
+  GitCompare,
+  Globe2,
   Hash,
   KeyRound,
   Link2,
   ListChecks,
   Palette,
   Percent,
+  Pilcrow,
   Pipette,
   Plus,
   QrCode,
+  Receipt,
   Regex,
   Ruler,
   Scale,
+  Scaling,
   Scissors,
   ScrollText,
   Search,
@@ -39,6 +49,8 @@ import {
   Sparkles,
   SquareStack,
   StickyNote,
+  Table,
+  Tag,
   Thermometer,
   Timer as TimerIcon,
   TimerReset,
@@ -88,6 +100,18 @@ const Base64Tool = lazy(() => import('@/features/json/Base64Tool'));
 const UuidGenerator = lazy(() => import('@/features/dev/UuidGenerator'));
 const TimestampConverter = lazy(() => import('@/features/dev/TimestampConverter'));
 const RegexTester = lazy(() => import('@/features/dev/RegexTester'));
+const JwtDecoder = lazy(() => import('@/features/dev/JwtDecoder'));
+const NumberBase = lazy(() => import('@/features/dev/NumberBase'));
+const HtmlEntities = lazy(() => import('@/features/dev/HtmlEntities'));
+const CsvJson = lazy(() => import('@/features/dev/CsvJson'));
+const CronExplainer = lazy(() => import('@/features/dev/CronExplainer'));
+const DiffChecker = lazy(() => import('@/features/compare/DiffChecker'));
+const LoremIpsum = lazy(() => import('@/features/text/LoremIpsum'));
+const SlugGenerator = lazy(() => import('@/features/web/SlugGenerator'));
+const DateCalculator = lazy(() => import('@/features/everyday/DateCalculator'));
+const TimezoneConverter = lazy(() => import('@/features/everyday/TimezoneConverter'));
+const TipCalculator = lazy(() => import('@/features/everyday/TipCalculator'));
+const ImageCropper = lazy(() => import('@/features/image/ImageCropper'));
 
 export const tools: Tool[] = [
   // ---------------------------------------------------------------- quick ----
@@ -191,6 +215,36 @@ export const tools: Tool[] = [
     keywords: ['counter', 'tally', 'count', 'лічильник', 'підрахунок', 'кількість'],
     route: '/tools/counter',
     component: Counter,
+    offline: true,
+  },
+  {
+    id: 'date-calculator',
+    name: { uk: 'Калькулятор дат', en: 'Date calculator' },
+    description: {
+      uk: 'Скільки днів між датами, вік до дня й додавання періодів.',
+      en: 'Days between dates, exact age, and adding or subtracting periods.',
+    },
+    category: 'quick-tools',
+    icon: CalendarDays,
+    keywords: ['date', 'days', 'age', 'between', 'calendar', 'дата', 'дати', 'вік', 'скільки днів', 'календар'],
+    route: '/tools/date-calculator',
+    component: DateCalculator,
+    isNew: true,
+    offline: true,
+  },
+  {
+    id: 'tip-calculator',
+    name: { uk: 'Чайові та рахунок', en: 'Tip & bill split' },
+    description: {
+      uk: 'Порахувати чайові та розділити рахунок на всіх.',
+      en: 'Work out the tip and split the bill between everyone.',
+    },
+    category: 'quick-tools',
+    icon: Receipt,
+    keywords: ['tip', 'bill', 'split', 'restaurant', 'чайові', 'рахунок', 'розділити', 'ресторан'],
+    route: '/tools/tip-calculator',
+    component: TipCalculator,
+    isNew: true,
     offline: true,
   },
 
@@ -300,6 +354,37 @@ export const tools: Tool[] = [
     component: TextToPdf,
     offline: true,
   },
+  {
+    id: 'diff-checker',
+    name: { uk: 'Порівняння текстів', en: 'Diff checker' },
+    description: {
+      uk: 'Побачити різницю між двома версіями тексту рядок за рядком.',
+      en: 'See what changed between two versions of a text, line by line.',
+    },
+    category: 'documents',
+    icon: GitCompare,
+    keywords: ['diff', 'compare', 'difference', 'merge', 'порівняти', 'різниця', 'версії', 'зміни'],
+    route: '/tools/diff-checker',
+    component: DiffChecker,
+    isNew: true,
+    isPopular: true,
+    offline: true,
+  },
+  {
+    id: 'lorem-ipsum',
+    name: { uk: 'Генератор тексту', en: 'Lorem ipsum' },
+    description: {
+      uk: 'Текст-заповнювач для макетів — латиною, українською або технічний.',
+      en: 'Placeholder copy for mockups — Latin, Ukrainian or technical.',
+    },
+    category: 'documents',
+    icon: Pilcrow,
+    keywords: ['lorem', 'ipsum', 'placeholder', 'dummy', 'заповнювач', 'рибний текст', 'макет'],
+    route: '/tools/lorem-ipsum',
+    component: LoremIpsum,
+    isNew: true,
+    offline: true,
+  },
 
   // --------------------------------------------------------------- images ----
   {
@@ -326,7 +411,7 @@ export const tools: Tool[] = [
       en: 'Exact dimensions, or presets for social media and avatars.',
     },
     category: 'images',
-    icon: Crop,
+    icon: Scaling,
     keywords: ['resize', 'scale', 'dimensions', 'crop', 'розмір', 'масштаб', 'змінити розмір', 'пікселі'],
     route: '/tools/image-resizer',
     component: ImageResizer,
@@ -403,6 +488,22 @@ export const tools: Tool[] = [
     keywords: ['color', 'picker', 'eyedropper', 'palette', 'hex', 'колір', 'піпетка', 'палітра'],
     route: '/tools/color-picker',
     component: ColorPicker,
+    isPopular: true,
+    offline: true,
+  },
+  {
+    id: 'image-cropper',
+    name: { uk: 'Обрізати зображення', en: 'Image cropper' },
+    description: {
+      uk: 'Виділити ділянку мишею, зі співвідношеннями сторін для соцмереж.',
+      en: 'Drag out the area you need, with aspect-ratio presets for social media.',
+    },
+    category: 'images',
+    icon: Crop,
+    keywords: ['crop', 'cut', 'trim', 'aspect', 'обрізати', 'кадрувати', 'вирізати', 'співвідношення'],
+    route: '/tools/image-cropper',
+    component: ImageCropper,
+    isNew: true,
     isPopular: true,
     offline: true,
   },
@@ -533,6 +634,21 @@ export const tools: Tool[] = [
     route: '/tools/currency-converter',
     component: CurrencyConverter,
     isPopular: true,
+  },
+  {
+    id: 'timezone-converter',
+    name: { uk: 'Часові пояси', en: 'Time zones' },
+    description: {
+      uk: 'Котра година в інших містах — з урахуванням переходу на літній час.',
+      en: 'What time it is elsewhere, daylight saving included.',
+    },
+    category: 'converters',
+    icon: Globe2,
+    keywords: ['timezone', 'utc', 'gmt', 'time', 'meeting', 'часовий пояс', 'пояси', 'котра година', 'зустріч'],
+    route: '/tools/timezone-converter',
+    component: TimezoneConverter,
+    isNew: true,
+    offline: true,
   },
 
   // ------------------------------------------------------------- security ----
@@ -684,6 +800,21 @@ export const tools: Tool[] = [
     component: MetaPreview,
     offline: true,
   },
+  {
+    id: 'slug-generator',
+    name: { uk: 'Генератор slug', en: 'Slug generator' },
+    description: {
+      uk: 'Перетворити заголовок на адресу сторінки з транслітерацією кирилиці.',
+      en: 'Turn a headline into a URL, transliterating Cyrillic properly.',
+    },
+    category: 'web',
+    icon: Tag,
+    keywords: ['slug', 'url', 'permalink', 'seo', 'transliteration', 'слаг', 'транслітерація', 'адреса', 'посилання'],
+    route: '/tools/slug-generator',
+    component: SlugGenerator,
+    isNew: true,
+    offline: true,
+  },
 
   // ---------------------------------------------------------------- study ----
   {
@@ -816,7 +947,7 @@ export const tools: Tool[] = [
       en: 'Text and files to Base64, with URL-safe support.',
     },
     category: 'developer',
-    icon: Binary,
+    icon: Braces,
     keywords: ['base64', 'encode', 'b64', 'data uri', 'кодування', 'база64'],
     route: '/tools/base64-encoder',
     component: Base64Tool,
@@ -831,7 +962,7 @@ export const tools: Tool[] = [
       en: 'Decode Base64 back to text, with validation.',
     },
     category: 'developer',
-    icon: Binary,
+    icon: Braces,
     keywords: ['base64', 'decode', 'b64', 'декодування', 'розкодувати'],
     route: '/tools/base64-decoder',
     component: Base64Tool,
@@ -892,6 +1023,82 @@ export const tools: Tool[] = [
     keywords: ['regex', 'regexp', 'pattern', 'match', 'регулярний вираз', 'регекс', 'шаблон'],
     route: '/tools/regex-tester',
     component: RegexTester,
+    offline: true,
+  },
+  {
+    id: 'jwt-decoder',
+    name: { uk: 'JWT-декодер', en: 'JWT decoder' },
+    description: {
+      uk: 'Прочитати вміст токена й термін його дії — локально, без перевірки підпису.',
+      en: 'Read a token’s claims and expiry — locally, without verifying the signature.',
+    },
+    category: 'developer',
+    icon: FileKey,
+    keywords: ['jwt', 'token', 'auth', 'bearer', 'claims', 'токен', 'авторизація', 'декодувати'],
+    route: '/tools/jwt-decoder',
+    component: JwtDecoder,
+    isNew: true,
+    offline: true,
+  },
+  {
+    id: 'number-base-converter',
+    name: { uk: 'Системи числення', en: 'Number base converter' },
+    description: {
+      uk: 'Двійкова, вісімкова, десяткова, шістнадцяткова та будь-яка основа до 36.',
+      en: 'Binary, octal, decimal, hexadecimal and any base up to 36.',
+    },
+    category: 'developer',
+    icon: Binary,
+    keywords: ['binary', 'hex', 'octal', 'base', 'number', 'двійкова', 'шістнадцяткова', 'системи числення'],
+    route: '/tools/number-base-converter',
+    component: NumberBase,
+    isNew: true,
+    offline: true,
+  },
+  {
+    id: 'html-entities',
+    name: { uk: 'HTML-сутності', en: 'HTML entities' },
+    description: {
+      uk: 'Екранувати символи для HTML і повернути їх назад.',
+      en: 'Escape characters for HTML and turn them back again.',
+    },
+    category: 'developer',
+    icon: Code,
+    keywords: ['html', 'entities', 'escape', 'unescape', 'nbsp', 'сутності', 'екранувати', 'символи'],
+    route: '/tools/html-entities',
+    component: HtmlEntities,
+    isNew: true,
+    offline: true,
+  },
+  {
+    id: 'csv-json-converter',
+    name: { uk: 'CSV ↔ JSON', en: 'CSV ↔ JSON' },
+    description: {
+      uk: 'Таблиця з Excel у JSON і назад, з підтримкою лапок і роздільників.',
+      en: 'Spreadsheet data to JSON and back, quoting and delimiters handled.',
+    },
+    category: 'developer',
+    icon: Table,
+    keywords: ['csv', 'json', 'excel', 'table', 'convert', 'таблиця', 'ексель', 'конвертувати'],
+    route: '/tools/csv-json-converter',
+    component: CsvJson,
+    isNew: true,
+    isPopular: true,
+    offline: true,
+  },
+  {
+    id: 'cron-explainer',
+    name: { uk: 'Cron-розклад', en: 'Cron explainer' },
+    description: {
+      uk: 'Що означає вираз і коли він спрацює наступного разу.',
+      en: 'What the expression means and when it fires next.',
+    },
+    category: 'developer',
+    icon: AlarmClock,
+    keywords: ['cron', 'crontab', 'schedule', 'job', 'крон', 'розклад', 'завдання'],
+    route: '/tools/cron-explainer',
+    component: CronExplainer,
+    isNew: true,
     offline: true,
   },
 ];
