@@ -10,6 +10,7 @@ import { Button, LinkButton } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/Dialog';
 import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 import { todayKey } from '@/lib/utils';
 import type { RecentEntry, Tool } from '@/types';
 
@@ -51,25 +52,27 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('history.title')}</h1>
-          <p className="mt-1.5 max-w-xl text-[15px] text-muted">{t('history.subtitle')}</p>
-          <PrivacyBadge className="mt-3" />
-        </div>
-        {recent.length > 0 ? (
-          <Button variant="danger" size="sm" icon={<Trash2 className="h-4 w-4" />} onClick={() => setConfirmOpen(true)}>
-            {t('history.clear')}
-          </Button>
-        ) : null}
-      </header>
+      <PageHeader
+        eyebrow="NOVA"
+        title={t('history.title')}
+        subtitle={t('history.subtitle')}
+        action={
+          recent.length > 0 ? (
+            <Button variant="danger" size="sm" icon={<Trash2 className="h-3.5 w-3.5" />} onClick={() => setConfirmOpen(true)}>
+              {t('history.clear')}
+            </Button>
+          ) : (
+            <PrivacyBadge />
+          )
+        }
+      />
 
       {groups.length > 0 ? (
         <div className="space-y-8">
           {groups.map((group) => (
             <section key={group.key}>
-              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint">{t(group.key)}</h2>
-              <div className="rounded-2xl border border-line bg-card/50 p-1.5">
+              <h2 className="nova-caps mb-2 border-b border-line pb-2">{t(group.key)}</h2>
+              <div>
                 {group.entries.map((entry) => {
                   const tool: Tool | undefined = toolMap.get(entry.toolId);
                   if (!tool) return null;

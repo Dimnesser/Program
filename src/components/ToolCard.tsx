@@ -5,125 +5,165 @@ import { useI18n } from '@/lib/i18n';
 import { useFavorites } from '@/hooks/useFavorites';
 import { categoryMap } from '@/data/categories';
 import { cn } from '@/lib/utils';
-import { Badge } from './ui/Badge';
 
 export function ToolIcon({ tool, className }: { tool: Tool; className?: string }) {
   const Icon = tool.icon;
-  const tint = categoryMap.get(tool.category)?.tint;
   return (
     <span
       className={cn(
-        'nova-glyph flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface',
-        'transition-colors duration-200',
+        'flex h-8 w-8 shrink-0 items-center justify-center border border-line bg-bg text-muted transition-colors duration-150',
         className,
       )}
-      style={{ color: tint }}
     >
-      <Icon className="h-[18px] w-[18px]" strokeWidth={1.9} />
+      <Icon className="h-4 w-4" strokeWidth={1.7} />
     </span>
   );
 }
 
-export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: boolean }) {
-  const { tl, t } = useI18n();
+function FavoriteToggle({ tool, className }: { tool: Tool; className?: string }) {
+  const { t } = useI18n();
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(tool.id);
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.preventDefault();
+        toggleFavorite(tool.id);
+      }}
+      aria-label={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
+      aria-pressed={favorite}
+      title={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
+      className={cn(
+        'p-1 transition-all duration-150',
+        favorite
+          ? 'text-ink opacity-100'
+          : 'text-faint opacity-0 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100',
+        className,
+      )}
+    >
+      <Star className={cn('h-3.5 w-3.5', favorite && 'fill-current')} />
+    </button>
+  );
+}
+
+/**
+ * A catalogue entry, set like a line in a printed index: number, name,
+ * description, section. This is the primary way tools are listed.
+ */
+export function ToolIndexRow({
+  tool,
+  index,
+  showCategory = true,
+}: {
+  tool: Tool;
+  index?: number;
+  showCategory?: boolean;
+}) {
+  const { tl } = useI18n();
+  const category = categoryMap.get(tool.category);
+
+  return (
+    <div className="nova-row group">
+      {index !== undefined ? (
+        <span className="w-7 shrink-0 font-mono text-[11px] text-faint">{String(index).padStart(2, '0')}</span>
+      ) : null}
+
+      <Link to={tool.route} className="flex min-w-0 flex-1 items-center gap-4">
+        <ToolIcon tool={tool} className="h-7 w-7 group-hover:border-line-strong group-hover:text-ink" />
+
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline gap-2">
+            <span className="truncate text-[14px] font-medium text-ink">{tl(tool.name)}</span>
+            {tool.isNew ? (
+              <span className="shrink-0 font-mono text-[9px] uppercase tracking-caps text-accent">new</span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 block truncate text-[12.5px] text-muted">{tl(tool.description)}</span>
+        </span>
+      </Link>
+
+      {showCategory ? (
+        <span className="nova-caps hidden max-w-[150px] shrink-0 truncate whitespace-nowrap text-right md:block">
+          {category ? tl(category.name) : ''}
+        </span>
+      ) : null}
+
+      <FavoriteToggle tool={tool} className="shrink-0" />
+
+      <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
+    </div>
+  );
+}
+
+/** A ruled tile for grids, where a list would be too dense. */
+export function ToolCard({ tool, compact = false }: { tool: Tool; compact?: boolean }) {
+  const { tl } = useI18n();
+  const category = categoryMap.get(tool.category);
 
   return (
     <div className="group relative">
       <Link
         to={tool.route}
         className={cn(
-          'nova-card nova-interactive flex h-full flex-col rounded-2xl',
+          'nova-card nova-interactive flex h-full flex-col hover:border-ink',
           compact ? 'p-3' : 'p-4',
-          'hover:border-line-strong focus-visible:-translate-y-0.5 focus-visible:border-accent/50',
         )}
       >
-        <div className="flex items-start gap-3">
-          <ToolIcon tool={tool} className={cn(compact && 'h-9 w-9 rounded-lg')} />
-          <div className="min-w-0 flex-1 pr-6">
-            <div className="flex items-center gap-1.5">
-              <h3 className={cn('truncate font-semibold text-ink', compact ? 'text-[13px]' : 'text-sm')}>
-                {tl(tool.name)}
-              </h3>
-              {tool.isNew ? (
-                <Badge tone="accent" className="shrink-0">
-                  {t('common.new')}
-                </Badge>
-              ) : null}
-            </div>
-            {!compact ? (
-              <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-muted">{tl(tool.description)}</p>
-            ) : null}
-          </div>
+        <div className="flex items-start justify-between gap-2">
+          <span className="nova-caps mt-1 truncate">{category ? tl(category.name) : ''}</span>
+          <ToolIcon tool={tool} className={cn('h-7 w-7 group-hover:text-ink', compact && 'h-6 w-6')} />
         </div>
 
-        <ArrowUpRight
-          className={cn(
-            'absolute bottom-3 right-3 h-3.5 w-3.5 text-faint opacity-0 transition-all duration-200',
-            'group-hover:translate-x-0.5 group-hover:opacity-100',
-            compact && 'hidden',
-          )}
-          aria-hidden="true"
-        />
+        <h3 className={cn('mt-4 truncate font-sans font-medium text-ink', compact ? 'text-[13px]' : 'text-[15px]')}>
+          {tl(tool.name)}
+        </h3>
+
+        {!compact ? (
+          <p className="mt-1 line-clamp-2 text-[12.5px] leading-snug text-muted">{tl(tool.description)}</p>
+        ) : null}
+
+        <span className="mt-auto flex items-center gap-1 pt-4">
+          {tool.isNew ? <span className="font-mono text-[9px] uppercase tracking-caps text-accent">new</span> : null}
+          <ArrowUpRight className="ml-auto h-3.5 w-3.5 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
+        </span>
       </Link>
 
-      <button
-        type="button"
-        onClick={() => toggleFavorite(tool.id)}
-        aria-label={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
-        aria-pressed={favorite}
-        title={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
-        className={cn(
-          'absolute right-2 top-2 rounded-lg p-1.5 transition-all duration-150',
-          favorite
-            ? 'text-warning opacity-100'
-            : 'text-faint opacity-0 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100',
-        )}
-      >
-        <Star className={cn('h-4 w-4', favorite && 'fill-current')} />
-      </button>
+      <div className="absolute bottom-2 left-2">
+        <FavoriteToggle tool={tool} />
+      </div>
     </div>
   );
 }
 
-/** A large, editorial card used to spotlight one tool on the dashboard. */
+/** An editorial feature block for one tool. */
 export function ToolSpotlight({ tool, eyebrow }: { tool: Tool; eyebrow: string }) {
   const { tl, t } = useI18n();
-  const open = t('common.open');
-  const tint = categoryMap.get(tool.category)?.tint;
   const Icon = tool.icon;
+  const category = categoryMap.get(tool.category);
 
   return (
-    <Link
-      to={tool.route}
-      className="nova-card nova-interactive group relative flex flex-col justify-between overflow-hidden rounded-3xl p-6 hover:border-line-strong"
-    >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full opacity-[0.16] blur-2xl transition-opacity duration-300 group-hover:opacity-25"
-        style={{ background: tint }}
-      />
-
-      <div className="flex items-start justify-between gap-4">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">{eyebrow}</span>
-        <span
-          className="nova-glyph flex h-11 w-11 items-center justify-center rounded-2xl border border-line bg-surface"
-          style={{ color: tint }}
-        >
-          <Icon className="h-5 w-5" strokeWidth={1.8} />
+    <Link to={tool.route} className="group block border-t-2 border-ink pt-4">
+      <div className="flex items-center justify-between gap-3">
+        <span className="nova-caps text-accent">{eyebrow}</span>
+        <span className="flex h-9 w-9 items-center justify-center border border-line bg-bg text-muted transition-colors group-hover:border-ink group-hover:text-ink">
+          <Icon className="h-4 w-4" strokeWidth={1.7} />
         </span>
       </div>
 
-      <div className="mt-10">
-        <h3 className="text-xl font-semibold tracking-[-0.025em] text-ink">{tl(tool.name)}</h3>
-        <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-muted">{tl(tool.description)}</p>
-      </div>
+      <h3 className="mt-6 font-serif text-[28px] font-semibold leading-[1.1] tracking-[-0.025em] text-ink">
+        {tl(tool.name)}
+      </h3>
+      <p className="mt-2 text-[13.5px] leading-relaxed text-muted">{tl(tool.description)}</p>
 
-      <span className="mt-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-accent">
-        {open}
-        <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </span>
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-line pt-3">
+        <span className="nova-caps">{category ? tl(category.name) : ''}</span>
+        <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent">
+          {t('common.open')}
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </span>
+      </div>
     </Link>
   );
 }
@@ -131,23 +171,16 @@ export function ToolSpotlight({ tool, eyebrow }: { tool: Tool; eyebrow: string }
 export function ToolChip({ tool }: { tool: Tool }) {
   const { tl } = useI18n();
   const Icon = tool.icon;
-  const tint = categoryMap.get(tool.category)?.tint;
 
   return (
     <Link
       to={tool.route}
       className={cn(
-        'group inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-card/70 py-2 pl-2.5 pr-3.5',
-        'text-[13px] font-medium text-ink transition-all duration-200 ease-nova',
-        'hover:-translate-y-0.5 hover:border-line-strong hover:bg-card hover:shadow-soft',
+        'group inline-flex shrink-0 items-center gap-2 border border-line bg-surface py-1.5 pl-2 pr-3',
+        'text-[12.5px] text-ink transition-colors duration-150 hover:border-ink',
       )}
     >
-      <span
-        className="nova-glyph flex h-6 w-6 items-center justify-center rounded-lg border border-line bg-surface"
-        style={{ color: tint }}
-      >
-        <Icon className="h-3.5 w-3.5" strokeWidth={2} />
-      </span>
+      <Icon className="h-3.5 w-3.5 shrink-0 text-faint transition-colors group-hover:text-ink" strokeWidth={1.7} />
       <span className="truncate">{tl(tool.name)}</span>
     </Link>
   );
@@ -158,12 +191,12 @@ export function ToolRow({ tool, meta }: { tool: Tool; meta?: string }) {
   return (
     <Link
       to={tool.route}
-      className="group flex items-center gap-3 rounded-xl border border-transparent px-2.5 py-2.5 transition-colors duration-150 hover:border-line hover:bg-card/70"
+      className="group flex items-center gap-3 border-b border-line py-2.5 transition-colors duration-150 last:border-0 hover:bg-accent/[0.04]"
     >
-      <ToolIcon tool={tool} className="h-9 w-9 rounded-lg" />
+      <ToolIcon tool={tool} className="h-7 w-7 group-hover:text-ink" />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[13px] font-medium text-ink">{tl(tool.name)}</span>
-        <span className="block truncate text-xs text-muted">{meta ?? tl(tool.description)}</span>
+        <span className="block truncate font-mono text-[11px] text-faint">{meta ?? tl(tool.description)}</span>
       </span>
       <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint opacity-0 transition-opacity group-hover:opacity-100" />
     </Link>

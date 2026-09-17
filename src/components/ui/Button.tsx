@@ -7,25 +7,23 @@ type Size = 'xs' | 'sm' | 'md' | 'lg';
 
 const base =
   'relative inline-flex select-none items-center justify-center gap-2 rounded-xl font-medium ' +
-  'transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-nova ' +
-  'active:scale-[0.985] disabled:pointer-events-none disabled:opacity-45 whitespace-nowrap';
+  'transition-colors duration-150 ease-nova disabled:pointer-events-none disabled:opacity-40 whitespace-nowrap';
 
+/* Primary is ink on paper — the accent colour is reserved for links and state. */
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-accent text-accent-fg shadow-[0_6px_20px_-8px_rgb(var(--nova-accent)/0.9)] ' +
-    'hover:brightness-110 hover:shadow-[0_10px_28px_-10px_rgb(var(--nova-accent)/0.95)]',
-  secondary: 'border border-line bg-elevated text-ink hover:border-line-strong hover:bg-elevated/70',
-  ghost: 'text-muted hover:bg-elevated hover:text-ink',
-  subtle: 'bg-accent/10 text-accent hover:bg-accent/15',
-  danger: 'bg-danger/12 text-danger hover:bg-danger/20',
-  success: 'bg-success/12 text-success hover:bg-success/20',
+  primary: 'bg-ink text-bg hover:bg-ink/90',
+  secondary: 'border border-line bg-surface text-ink hover:border-line-strong hover:bg-bg',
+  ghost: 'text-muted hover:bg-accent/[0.06] hover:text-ink',
+  subtle: 'border border-accent/25 bg-accent/[0.07] text-accent hover:bg-accent/[0.12]',
+  danger: 'border border-danger/30 bg-danger/[0.06] text-danger hover:bg-danger/[0.12]',
+  success: 'border border-success/30 bg-success/[0.06] text-success hover:bg-success/[0.12]',
 };
 
 const sizes: Record<Size, string> = {
-  xs: 'h-8 px-2.5 text-xs',
-  sm: 'h-9 px-3 text-[13px]',
-  md: 'h-10 px-4 text-sm',
-  lg: 'h-12 px-6 text-[15px]',
+  xs: 'h-7 px-2.5 text-xs',
+  sm: 'h-8 px-3 text-[13px]',
+  md: 'h-9 px-4 text-[13px]',
+  lg: 'h-11 px-5 text-sm',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -50,7 +48,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     >
       {loading ? (
         <span
-          className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          className="h-3.5 w-3.5 animate-spin rounded-full border border-current border-t-transparent"
           aria-hidden="true"
         />
       ) : (
@@ -82,10 +80,7 @@ export function LinkButton({
   children: ReactNode;
 }) {
   return (
-    <Link
-      to={to}
-      className={cn(base, variants[variant], sizes[size], block && 'w-full', className)}
-    >
+    <Link to={to} className={cn(base, variants[variant], sizes[size], block && 'w-full', className)}>
       {icon}
       {children}
       {iconRight}
@@ -100,7 +95,7 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   active?: boolean;
 }
 
-const iconSizes = { sm: 'h-8 w-8', md: 'h-9 w-9', lg: 'h-10 w-10' };
+const iconSizes = { sm: 'h-7 w-7', md: 'h-8 w-8', lg: 'h-9 w-9' };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
   { label, className, variant = 'ghost', size = 'md', active, children, ...props },
@@ -117,7 +112,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
         variants[variant],
         iconSizes[size],
         'rounded-xl p-0',
-        active && 'bg-accent/12 text-accent',
+        active && 'bg-accent/10 text-accent',
         className,
       )}
       {...props}

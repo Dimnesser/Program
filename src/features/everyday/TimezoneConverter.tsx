@@ -94,7 +94,7 @@ export default function TimezoneConverter() {
   const options = zones.map((zone) => ({ value: zone, label: zone.replace(/_/g, ' ') }));
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
       <Card className="space-y-4">
         <Select label={t('tz.source')} value={source} onChange={(event) => setSource(event.target.value)} options={options} />
         <Input

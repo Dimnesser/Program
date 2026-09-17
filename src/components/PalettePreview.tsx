@@ -4,7 +4,6 @@ import { useI18n } from '@/lib/i18n';
 import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
 import { usePreferences } from '@/hooks/usePreferences';
 import { toolMap } from '@/data/tools';
-import { categoryMap } from '@/data/categories';
 import { Kbd } from './ui/Badge';
 import { cn } from '@/lib/utils';
 import type { Language } from '@/types';
@@ -97,7 +96,7 @@ export function PalettePreview() {
   return (
     <div
       aria-hidden="true"
-      className="nova-card mx-auto w-full max-w-xl overflow-hidden rounded-2xl text-left shadow-pop"
+      className="mx-auto w-full max-w-xl overflow-hidden border border-ink bg-surface text-left shadow-pop"
     >
       <div className="flex items-center gap-3 border-b border-line px-4">
         <Search className="h-4 w-4 shrink-0 text-faint" />
@@ -116,34 +115,28 @@ export function PalettePreview() {
       </div>
 
       {scene.answer && complete ? (
-        <div className="flex items-start gap-3 border-b border-line bg-accent/[0.06] px-4 py-3 animate-fade-in">
-          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-            <Sparkles className="h-3.5 w-3.5" />
-          </span>
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-accent">{t('search.smart')}</p>
-            <p className="mt-0.5 truncate font-mono text-sm font-semibold text-ink">{scene.answer}</p>
-          </div>
+        <div className="border-b border-line bg-accent/[0.05] px-4 py-3 animate-fade-in">
+          <p className="nova-caps flex items-center gap-1.5 text-accent">
+            <Sparkles className="h-3 w-3" />
+            {t('search.smart')}
+          </p>
+          <p className="mt-1 truncate font-mono text-[15px] font-semibold text-ink">{scene.answer}</p>
         </div>
       ) : null}
 
-      <div className="p-2">
+      <div>
         {rows.map((tool, index) => {
           const Icon = tool.icon;
-          const tint = categoryMap.get(tool.category)?.tint;
           return (
             <div
               key={tool.id}
               className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5',
-                index === 0 && complete ? 'bg-accent/10' : '',
+                'flex items-center gap-3 border-b border-line px-4 py-2.5 last:border-0',
+                index === 0 && complete ? 'bg-accent/[0.06]' : '',
               )}
             >
-              <span
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-surface"
-                style={{ color: tint }}
-              >
-                <Icon className="h-4 w-4" strokeWidth={1.9} />
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-line text-faint">
+                <Icon className="h-4 w-4" strokeWidth={1.7} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13.5px] font-medium text-ink">{tl(tool.name)}</span>

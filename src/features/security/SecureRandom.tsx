@@ -46,7 +46,7 @@ export default function SecureRandom() {
   }, [generate]);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
       <Card className="space-y-4">
         <div>
           <span className="mb-1.5 block text-[13px] font-medium text-muted">{t('random.encoding')}</span>

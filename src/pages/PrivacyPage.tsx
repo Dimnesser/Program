@@ -1,8 +1,7 @@
 import { Cpu, Database, Globe, KeyRound, SlidersHorizontal, UserX } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { Card } from '@/components/ui/Card';
-import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 
 const SECTIONS = [
   { icon: Cpu, title: 'privacy.p1.title', text: 'privacy.p1.text' },
@@ -19,23 +18,20 @@ export default function PrivacyPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <header>
-        <PrivacyBadge asLink={false} />
-        <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('privacy.title')}</h1>
-        <p className="mt-1.5 text-[15px] text-muted">{t('privacy.subtitle')}</p>
-      </header>
+      <PageHeader eyebrow={t('privacy.badge')} title={t('privacy.title')} subtitle={t('privacy.subtitle')} />
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        {SECTIONS.map((section) => {
+      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+        {SECTIONS.map((section, index) => {
           const Icon = section.icon;
           return (
-            <Card key={section.title} className="p-5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface text-accent">
-                <Icon className="h-4 w-4" />
-              </span>
-              <h2 className="mt-4 text-[14px] font-semibold text-ink">{t(section.title)}</h2>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{t(section.text)}</p>
-            </Card>
+            <div key={section.title} className="border-t border-line pt-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
+                <Icon className="h-4 w-4 text-faint" strokeWidth={1.7} />
+              </div>
+              <h2 className="mt-4 font-serif text-[19px] font-semibold text-ink">{t(section.title)}</h2>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-muted">{t(section.text)}</p>
+            </div>
           );
         })}
       </div>

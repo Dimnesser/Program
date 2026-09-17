@@ -7,6 +7,7 @@ import { ToolCard } from '@/components/ToolCard';
 import { EmptyState } from '@/components/ui/States';
 import { LinkButton } from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 import type { Tool } from '@/types';
 
 export default function FavoritesPage() {
@@ -19,10 +20,7 @@ export default function FavoritesPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('fav.title')}</h1>
-        <p className="mt-1.5 text-[15px] text-muted">{t('fav.subtitle')}</p>
-      </header>
+      <PageHeader eyebrow={`${items.length}`} title={t('fav.title')} subtitle={t('fav.subtitle')} />
 
       {items.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">

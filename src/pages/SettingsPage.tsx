@@ -26,6 +26,7 @@ import { ConfirmDialog } from '@/components/ui/Dialog';
 import { Badge } from '@/components/ui/Badge';
 import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 import { downloadText, formatBytes, cn } from '@/lib/utils';
 import { tools } from '@/data/tools';
 import type { Language, ThemeMode } from '@/types';
@@ -75,10 +76,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('settings.title')}</h1>
-        <p className="mt-1.5 text-[15px] text-muted">{t('settings.subtitle')}</p>
-      </header>
+      <PageHeader eyebrow="NOVA" title={t('settings.title')} subtitle={t('settings.subtitle')} />
 
       {!storageOk ? (
         <div className="rounded-2xl border border-warning/30 bg-warning/[0.07] px-4 py-3 text-[13px] text-warning">
@@ -88,7 +86,7 @@ export default function SettingsPage() {
 
       {/* Appearance */}
       <Card>
-        <SectionHeader title={t('settings.appearance')} icon={<Palette className="h-4 w-4" />} />
+        <SectionHeader title={t('settings.appearance')} icon={<Palette className="h-4 w-4" />} divider="bottom" />
         <div className="grid gap-3 sm:grid-cols-3">
           {themes.map((item) => {
             const Icon = item.icon;
@@ -150,6 +148,7 @@ export default function SettingsPage() {
           title={t('settings.language')}
           subtitle={t('settings.languageHint')}
           icon={<Languages className="h-4 w-4" />}
+          divider="bottom"
         />
         <div className="grid gap-3 sm:grid-cols-2">
           {LANGUAGES.map((item) => {
@@ -189,6 +188,7 @@ export default function SettingsPage() {
           title={t('settings.shortcuts')}
           subtitle={t('settings.shortcutsHint')}
           icon={<Keyboard className="h-4 w-4" />}
+          divider="bottom"
           action={
             <Link
               to="/shortcuts"

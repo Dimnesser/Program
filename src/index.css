@@ -3,72 +3,72 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
-   NOVA design tokens
-   Every semantic role has an explicit value in both themes — light mode is a
-   full palette, not an inverted background.
+   NOVA — editorial technical
+   Paper, rules and type do the work. Depth comes from whitespace and hairlines,
+   not from shadows or glows. Light is the default; dark is a full counterpart
+   printed on warm black rather than navy.
 --------------------------------------------------------------------------- */
 @layer base {
   :root,
-  [data-theme='dark'] {
-    color-scheme: dark;
-    --nova-bg: 7 8 13;
-    --nova-surface: 12 14 21;
-    --nova-card: 17 20 28;
-    --nova-elevated: 22 26 36;
-    --nova-border: 34 40 57;
-    --nova-border-strong: 48 56 78;
-    --nova-text: 237 240 247;
-    --nova-muted: 139 147 167;
-    --nova-faint: 95 103 122;
-    --nova-accent: 122 140 255;
-    --nova-accent-soft: 38 44 82;
-    --nova-accent-fg: 6 7 12;
-    --nova-success: 61 220 151;
-    --nova-warning: 255 184 107;
-    --nova-danger: 255 107 107;
-    --nova-grid: 255 255 255;
-    --nova-grid-opacity: 0.022;
-    --nova-halo-opacity: 0.5;
-    /* A hairline of light along the top edge, the way a lit surface behaves. */
-    --nova-edge: inset 0 1px 0 rgb(255 255 255 / 0.05);
-    --nova-card-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.028), transparent 38%);
-    --nova-elevation: 0 1px 2px rgb(0 0 0 / 0.28), 0 12px 32px -18px rgb(0 0 0 / 0.55);
-    --nova-elevation-hover: 0 2px 4px rgb(0 0 0 / 0.3), 0 22px 48px -22px rgb(0 0 0 / 0.7);
-  }
-
   [data-theme='light'] {
     color-scheme: light;
-    --nova-bg: 244 246 251;
+    --nova-bg: 251 250 248;
     --nova-surface: 255 255 255;
     --nova-card: 255 255 255;
     --nova-elevated: 255 255 255;
-    --nova-border: 226 230 240;
-    --nova-border-strong: 200 207 223;
-    --nova-text: 14 17 23;
-    --nova-muted: 92 100 121;
-    --nova-faint: 134 142 162;
-    --nova-accent: 67 87 240;
-    --nova-accent-soft: 232 235 255;
+    --nova-rule: 227 223 216;
+    --nova-rule-strong: 197 191 182;
+    --nova-ink: 23 22 26;
+    --nova-muted: 93 90 85;
+    --nova-faint: 140 135 129;
+    --nova-accent: 39 67 196;
+    --nova-accent-soft: 234 237 251;
     --nova-accent-fg: 255 255 255;
-    --nova-success: 12 150 103;
-    --nova-warning: 176 102 6;
-    --nova-danger: 205 46 46;
-    --nova-grid: 15 23 42;
+    --nova-success: 26 122 76;
+    --nova-warning: 166 98 6;
+    --nova-danger: 192 40 28;
+    --nova-shadow: 30 26 20;
+    --nova-grid: 23 22 26;
     --nova-grid-opacity: 0.032;
-    --nova-halo-opacity: 0.22;
-    --nova-edge: inset 0 1px 0 rgb(255 255 255 / 0.9);
-    --nova-card-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.6), transparent 40%);
-    --nova-elevation: 0 1px 2px rgb(15 23 42 / 0.06), 0 10px 26px -16px rgb(15 23 42 / 0.22);
-    --nova-elevation-hover: 0 2px 6px rgb(15 23 42 / 0.08), 0 20px 42px -20px rgb(15 23 42 / 0.3);
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+    --nova-bg: 13 12 11;
+    --nova-surface: 21 20 18;
+    --nova-card: 21 20 18;
+    --nova-elevated: 28 26 24;
+    --nova-rule: 42 39 36;
+    --nova-rule-strong: 63 58 52;
+    --nova-ink: 242 239 233;
+    --nova-muted: 162 156 147;
+    --nova-faint: 122 116 108;
+    --nova-accent: 143 166 255;
+    --nova-accent-soft: 30 36 64;
+    --nova-accent-fg: 13 12 11;
+    --nova-success: 78 199 138;
+    --nova-warning: 226 168 84;
+    --nova-danger: 240 118 100;
+    --nova-shadow: 0 0 0;
+    --nova-grid: 242 239 233;
+    --nova-grid-opacity: 0.028;
   }
 
   * {
     @apply border-line;
   }
 
+  /*
+   * Grid items default to min-width: auto, so one long row can widen a track
+   * past the viewport. Everything in this app is meant to shrink, so make the
+   * shrinking default explicit rather than fixing it per layout.
+   */
+  .grid > * {
+    min-width: 0;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
   }
 
   body {
@@ -85,48 +85,40 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-accent/70 ring-offset-2;
-    --tw-ring-offset-color: rgb(var(--nova-bg));
+    @apply outline-none;
+    box-shadow: 0 0 0 2px rgb(var(--nova-bg)), 0 0 0 4px rgb(var(--nova-accent));
+    border-radius: 2px;
   }
 
   ::selection {
-    background: rgb(var(--nova-accent) / 0.28);
-    color: rgb(var(--nova-text));
+    background: rgb(var(--nova-accent) / 0.18);
+    color: rgb(var(--nova-ink));
   }
 
-  h1, h2, h3, h4 {
-    @apply font-semibold tracking-[-0.02em];
+  /* Headlines are set in the serif; everything else stays in the grotesk. */
+  h1, h2, h3 {
+    @apply font-serif font-semibold;
+    letter-spacing: -0.012em;
     text-wrap: balance;
   }
 
-  /* Large type needs tighter tracking to stay optically even. */
-  .nova-display {
-    letter-spacing: -0.04em;
-    line-height: 1.02;
-    font-weight: 620;
+  h4, h5, h6 {
+    @apply font-sans font-semibold;
   }
 
-  /* Figures line up in tables and stat tiles. */
-  .tabular,
-  .font-mono {
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Custom scrollbars */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--nova-border-strong)) transparent;
+    scrollbar-color: rgb(var(--nova-rule-strong)) transparent;
   }
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgb(var(--nova-border-strong));
-    border-radius: 999px;
+    background: rgb(var(--nova-rule-strong));
     border: 3px solid transparent;
     background-clip: content-box;
   }
@@ -142,45 +134,40 @@
     cursor: pointer;
   }
   input[type='range']::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 999px;
+    height: 2px;
     background: linear-gradient(
       to right,
-      rgb(var(--nova-accent)) var(--range-progress, 50%),
-      rgb(var(--nova-border)) var(--range-progress, 50%)
+      rgb(var(--nova-ink)) var(--range-progress, 50%),
+      rgb(var(--nova-rule)) var(--range-progress, 50%)
     );
   }
   input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    height: 18px;
-    width: 18px;
+    height: 14px;
+    width: 14px;
     margin-top: -6px;
-    border-radius: 999px;
-    background: rgb(var(--nova-text));
-    border: 3px solid rgb(var(--nova-accent));
-    box-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
-    transition: transform 0.15s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+    border-radius: 0;
+    background: rgb(var(--nova-ink));
+    transition: transform 0.12s ease;
   }
   input[type='range']:active::-webkit-slider-thumb {
-    transform: scale(1.12);
+    transform: scaleY(1.35);
   }
   input[type='range']::-moz-range-track {
-    height: 6px;
-    border-radius: 999px;
-    background: rgb(var(--nova-border));
+    height: 2px;
+    background: rgb(var(--nova-rule));
   }
   input[type='range']::-moz-range-progress {
-    height: 6px;
-    border-radius: 999px;
-    background: rgb(var(--nova-accent));
+    height: 2px;
+    background: rgb(var(--nova-ink));
   }
   input[type='range']::-moz-range-thumb {
     height: 14px;
     width: 14px;
-    border-radius: 999px;
-    background: rgb(var(--nova-text));
-    border: 3px solid rgb(var(--nova-accent));
+    border: 0;
+    border-radius: 0;
+    background: rgb(var(--nova-ink));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -190,96 +177,74 @@
       animation-duration: 0.001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
-      scroll-behavior: auto !important;
     }
   }
 
-  /* The same treatment when the switch in Settings is on. */
   [data-motion='reduced'] *,
   [data-motion='reduced'] *::before,
   [data-motion='reduced'] *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
 @layer components {
+  /* A "card" is now a ruled box: hairline border, square corners, no shadow. */
   .nova-card {
-    @apply relative min-w-0 rounded-3xl border border-line bg-card/80 backdrop-blur-xl;
-    box-shadow: var(--nova-edge), var(--nova-elevation);
+    @apply min-w-0 rounded-2xl border border-line bg-surface;
   }
 
-  /* The sheen sits above the background but below content. */
-  .nova-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: var(--nova-card-sheen);
-    pointer-events: none;
-  }
-
-  .nova-card > * {
-    position: relative;
+  .nova-panel {
+    @apply min-w-0 rounded-xl border border-line bg-surface;
   }
 
   .nova-interactive {
     transition:
-      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      background-color 0.2s ease;
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
 
   .nova-interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--nova-edge), var(--nova-elevation-hover);
+    @apply border-line-strong;
   }
 
-  .nova-panel {
-    @apply min-w-0 rounded-2xl border border-line bg-surface/70;
+  /* Small-caps metadata: the voice of the technical side of the design. */
+  .nova-caps {
+    @apply font-mono text-[10px] uppercase tracking-caps text-faint;
   }
 
   .nova-field {
-    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink
+    @apply w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink
       placeholder:text-faint transition-colors duration-150
-      hover:border-line-strong focus:border-accent/60 focus:outline-none
-      focus:ring-2 focus:ring-accent/25;
+      hover:border-line-strong focus:border-accent focus:outline-none;
   }
 
-  .nova-glyph {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .nova-glyph::after {
-    content: '';
-    position: absolute;
-    inset: -30%;
-    z-index: -1;
-    border-radius: 999px;
-    background: radial-gradient(circle, currentColor 0%, transparent 68%);
-    opacity: 0.12;
-    transition: opacity 0.2s ease;
-  }
-
-  .group:hover .nova-glyph::after {
-    opacity: 0.24;
+  .nova-field:focus {
+    box-shadow: inset 0 0 0 1px rgb(var(--nova-accent));
   }
 
   .nova-chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/80
-      px-3 py-1.5 text-xs font-medium text-muted transition-all duration-150
+    @apply inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-2.5 py-1.5
+      text-xs font-medium text-muted transition-colors duration-150
       hover:border-line-strong hover:text-ink;
+  }
+
+  /* Catalogue rows: the primary way tools are listed now. */
+  .nova-row {
+    @apply relative flex items-center gap-4 border-b border-line px-2 py-3 transition-colors duration-150;
+  }
+
+  .nova-row:hover {
+    background: rgb(var(--nova-accent) / 0.04);
   }
 
   .nova-scroll-fade {
     mask-image: linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent);
   }
 
-  /* Ambient background: fine grid + soft accent halo */
+  /* A faint engineering grid, visible only at the top of the page. */
   .nova-backdrop::before {
     content: '';
     position: fixed;
@@ -289,27 +254,8 @@
     background-image:
       linear-gradient(rgb(var(--nova-grid) / var(--nova-grid-opacity)) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--nova-grid) / var(--nova-grid-opacity)) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, black 10%, transparent 75%);
-  }
-
-  .nova-backdrop::after {
-    content: '';
-    position: fixed;
-    top: -22rem;
-    left: 50%;
-    height: 44rem;
-    width: min(76rem, 140vw);
-    transform: translateX(-50%);
-    z-index: -1;
-    pointer-events: none;
-    opacity: var(--nova-halo-opacity);
-    background: radial-gradient(
-      50% 50% at 50% 50%,
-      rgb(var(--nova-accent) / 0.16) 0%,
-      rgb(var(--nova-accent) / 0.05) 45%,
-      transparent 72%
-    );
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, black, transparent 420px);
   }
 }
 
@@ -326,5 +272,15 @@
   }
   .safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  /* Display type: serif, tight, optically corrected for large sizes. */
+  .nova-display {
+    @apply font-serif font-semibold;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 }

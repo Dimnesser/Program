@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 type Tone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
 
 const tones: Record<Tone, string> = {
-  neutral: 'border-line bg-surface text-muted',
-  accent: 'border-accent/30 bg-accent/10 text-accent',
-  success: 'border-success/30 bg-success/10 text-success',
-  warning: 'border-warning/30 bg-warning/10 text-warning',
-  danger: 'border-danger/30 bg-danger/10 text-danger',
+  neutral: 'border-line text-muted',
+  accent: 'border-accent/35 text-accent',
+  success: 'border-success/35 text-success',
+  warning: 'border-warning/35 text-warning',
+  danger: 'border-danger/35 text-danger',
 };
 
 export function Badge({
@@ -25,7 +25,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium',
+        'inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-caps',
         tones[tone],
         className,
       )}
@@ -40,8 +40,8 @@ export function Kbd({ children, className }: { children: ReactNode; className?: 
   return (
     <kbd
       className={cn(
-        'inline-flex h-5 min-w-[20px] items-center justify-center rounded-[6px] border border-line-strong',
-        'bg-elevated px-1.5 font-sans text-[11px] font-medium text-muted shadow-[0_1px_0_rgb(var(--nova-border-strong))]',
+        'inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm border border-line',
+        'bg-bg px-1 font-mono text-[10px] text-muted',
         className,
       )}
     >

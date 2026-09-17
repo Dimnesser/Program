@@ -98,7 +98,7 @@ export default function TextToPdf({ initial }: ToolProps) {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="flex flex-col gap-4">
         <Input label={t('pdf.title')} value={title} onChange={(event) => setTitle(event.target.value)} />
         <Textarea

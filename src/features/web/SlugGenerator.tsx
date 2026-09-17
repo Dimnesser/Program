@@ -30,7 +30,7 @@ export default function SlugGenerator({ initial }: ToolProps) {
   const all = slugs.map((item) => item.slug).join('\n');
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <div className="space-y-5">
         <Card className="flex flex-col p-4">
           <div className="mb-2 flex items-center justify-between gap-2">

@@ -77,7 +77,7 @@ export default function ImageResizer({ initial }: ToolProps) {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <Badge>{batch.items.length} {t('batch.files')}</Badge>

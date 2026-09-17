@@ -54,41 +54,41 @@ export default function ToolPage() {
 
   return (
     <div className="space-y-8">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[13px] text-faint">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-caps text-faint">
         <Link to="/" className="transition-colors hover:text-ink">
           NOVA
         </Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <ChevronRight className="h-3 w-3" />
         <Link to={`/tools?category=${tool.category}`} className="truncate transition-colors hover:text-ink">
           {category ? tl(category.name) : t('nav.tools')}
         </Link>
-        <ChevronRight className="h-3.5 w-3.5" />
-        <span className="truncate text-muted">{tl(tool.name)}</span>
       </nav>
 
-      <header className="flex flex-wrap items-start gap-4">
-        <ToolIcon tool={tool} className="h-12 w-12 rounded-2xl" />
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-[28px]">{tl(tool.name)}</h1>
-          <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-muted">{tl(tool.description)}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {tool.offline ? <PrivacyBadge className="hidden sm:inline-flex" /> : null}
-          <button
-            type="button"
-            onClick={() => toggleFavorite(tool.id)}
-            aria-pressed={favorite}
-            aria-label={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
-            className={cn(
-              'flex h-10 items-center gap-2 rounded-xl border px-3.5 text-[13px] font-medium transition-all duration-150',
-              favorite
-                ? 'border-warning/35 bg-warning/10 text-warning'
-                : 'border-line bg-surface text-muted hover:border-line-strong hover:text-ink',
-            )}
-          >
-            <Star className={cn('h-4 w-4', favorite && 'fill-current')} />
-            <span className="hidden sm:inline">{favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}</span>
-          </button>
+      <header className="border-b border-ink pb-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex min-w-0 items-start gap-4">
+            <ToolIcon tool={tool} className="mt-2 h-10 w-10" />
+            <div className="min-w-0">
+              <h1 className="nova-display text-[34px] text-ink sm:text-[42px]">{tl(tool.name)}</h1>
+              <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-muted">{tl(tool.description)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {tool.offline ? <PrivacyBadge className="hidden sm:inline-flex" /> : null}
+            <button
+              type="button"
+              onClick={() => toggleFavorite(tool.id)}
+              aria-pressed={favorite}
+              aria-label={favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}
+              className={cn(
+                'flex h-8 items-center gap-2 border px-3 text-[12.5px] font-medium transition-colors duration-150',
+                favorite ? 'border-ink bg-ink text-bg' : 'border-line text-muted hover:border-ink hover:text-ink',
+              )}
+            >
+              <Star className={cn('h-3.5 w-3.5', favorite && 'fill-current')} />
+              <span className="hidden sm:inline">{favorite ? t('tools.removeFavorite') : t('tools.addFavorite')}</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -105,7 +105,7 @@ export default function ToolPage() {
 
       {related.length > 0 ? (
         <section className="border-t border-line pt-6">
-          <h2 className="mb-3 text-[13px] font-semibold text-muted">{t('tools.related')}</h2>
+          <h2 className="nova-caps mb-3">{t('tools.related')}</h2>
           <div className="flex flex-wrap gap-2">
             {related.map((item) => (
               <ToolChip key={item.id} tool={item} />

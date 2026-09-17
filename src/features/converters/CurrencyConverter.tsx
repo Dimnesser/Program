@@ -60,7 +60,7 @@ export default function CurrencyConverter({ initial }: ToolProps) {
   );
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="space-y-4">
         <div className="grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
           <div className="space-y-3">

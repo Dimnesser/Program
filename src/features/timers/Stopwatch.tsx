@@ -43,7 +43,7 @@ export default function Stopwatch() {
   const lapTotal = laps.reduce((sum, lap) => sum + lap, 0);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <Card className="flex flex-col items-center justify-center gap-8 py-14">
         <p className="font-mono text-5xl font-semibold tabular-nums tracking-tight text-ink sm:text-7xl" aria-live="off">
           {format(elapsed)}

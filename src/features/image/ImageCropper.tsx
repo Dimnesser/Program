@@ -202,7 +202,7 @@ export default function ImageCropper() {
     'absolute h-3.5 w-3.5 rounded-full border-2 border-accent bg-bg shadow-[0_2px_6px_rgb(0_0_0/0.35)]';
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="p-4">
         <div
           ref={frameRef}

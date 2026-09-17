@@ -52,7 +52,7 @@ export default function NumberBase({ initial }: ToolProps) {
   }));
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="space-y-3">
         {rows.map((row) => {
           const active = source.base === row.base;

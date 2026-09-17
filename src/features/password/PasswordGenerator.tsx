@@ -42,7 +42,7 @@ export default function PasswordGenerator({ initial }: ToolProps) {
   const report = useMemo(() => analyzePassword(password), [password]);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
       <Card className="flex flex-col gap-5">
         <div
           className={cn(

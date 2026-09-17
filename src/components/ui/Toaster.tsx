@@ -35,11 +35,11 @@ export function Toaster() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-line bg-elevated/95 p-3.5 shadow-pop backdrop-blur-xl"
+              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 border border-ink bg-surface p-3.5 shadow-pop"
             >
               <span
                 className={cn(
-                  'mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-current/10',
+                  'mt-0.5 shrink-0',
                   tones[item.variant],
                 )}
               >

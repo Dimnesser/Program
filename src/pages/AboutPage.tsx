@@ -1,8 +1,7 @@
 import { useI18n } from '@/lib/i18n';
-import { Card } from '@/components/ui/Card';
-import { Logo } from '@/components/Logo';
 import { LinkButton } from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 import { tools } from '@/data/tools';
 import { categories } from '@/data/categories';
 
@@ -14,43 +13,36 @@ export default function AboutPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <header>
-        <Logo showTagline />
-        <h1 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('about.title')}</h1>
-        <p className="mt-1.5 text-[15px] text-muted">{t('about.subtitle')}</p>
-      </header>
+      <PageHeader eyebrow="NOVA" title={t('about.title')} subtitle={t('about.subtitle')} />
 
-      <Card className="space-y-4">
-        <p className="text-[14px] leading-relaxed text-muted">{t('about.text1')}</p>
-        <p className="text-[14px] leading-relaxed text-muted">{t('about.text2')}</p>
-      </Card>
+      <div className="max-w-2xl space-y-5">
+        <p className="font-serif text-[20px] leading-[1.5] text-ink">{t('about.text1')}</p>
+        <p className="text-[14.5px] leading-relaxed text-muted">{t('about.text2')}</p>
+      </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-px border border-line bg-line">
         {[
           { value: String(tools.length), label: t('about.toolsCount') },
           { value: String(categories.length), label: t('about.categoriesCount') },
           { value: '0', label: t('about.serversCount') },
         ].map((stat) => (
-          <Card key={stat.label} className="p-4 text-center">
-            <p className="text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-3xl">{stat.value}</p>
-            <p className="mt-1 text-[11px] leading-snug text-muted sm:text-xs">{stat.label}</p>
-          </Card>
+          <div key={stat.label} className="bg-bg px-4 py-6 text-center">
+            <p className="font-serif text-[32px] font-semibold tracking-[-0.02em] text-ink">{stat.value}</p>
+            <p className="nova-caps mt-2">{stat.label}</p>
+          </div>
         ))}
       </div>
 
-      <Card>
-        <h2 className="text-[14px] font-semibold text-ink">{t('about.stack')}</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
+      <section>
+        <h2 className="nova-caps border-b border-line pb-2">{t('about.stack')}</h2>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           {STACK.map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-muted"
-            >
+            <span key={item} className="font-mono text-[12px] text-muted">
               {item}
             </span>
           ))}
         </div>
-      </Card>
+      </section>
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <LinkButton to="/tools" variant="primary" block>

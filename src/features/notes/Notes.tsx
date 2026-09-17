@@ -100,7 +100,7 @@ export default function Notes() {
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
         <Card className="max-h-[560px] overflow-y-auto p-2">
           {sorted.length === 0 ? (
             <EmptyState

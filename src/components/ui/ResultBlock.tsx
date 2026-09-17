@@ -33,7 +33,7 @@ export function ResultBlock({
       )}
       <div
         className={cn(
-          'relative flex-1 overflow-auto rounded-xl border border-line bg-surface/70 p-3.5',
+          'relative flex-1 overflow-auto border border-line bg-bg p-3.5',
           mono ? 'font-mono text-[13px]' : 'text-sm',
           'leading-relaxed',
         )}
@@ -53,8 +53,8 @@ export function StatRow({ items }: { items: { label: string; value: ReactNode; t
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       {items.map((item) => (
-        <div key={item.label} className="rounded-xl border border-line bg-surface/60 px-3 py-2.5">
-          <div className="text-[11px] uppercase tracking-[0.06em] text-faint">{item.label}</div>
+        <div key={item.label} className="border-t border-line pt-2.5">
+          <div className="nova-caps">{item.label}</div>
           <div
             className={cn(
               'mt-0.5 truncate text-lg font-semibold tabular-nums text-ink',

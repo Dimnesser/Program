@@ -1,19 +1,17 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, Flame, Sparkles, Star, StickyNote, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Clock, Star, StickyNote } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useRecent } from '@/hooks/useRecent';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { usePreferences } from '@/hooks/usePreferences';
 import { StorageKeys } from '@/lib/storage';
 import { featuredTools, newTools, popularTools, toolMap, tools } from '@/data/tools';
 import { categories } from '@/data/categories';
-import { formatSpan, isoWeekKey, cn } from '@/lib/utils';
+import { formatSpan, isoWeekKey } from '@/lib/utils';
 import { SmartSearch } from '@/components/SmartSearch';
-import { ToolCard, ToolChip, ToolRow, ToolSpotlight } from '@/components/ToolCard';
+import { ToolChip, ToolIndexRow, ToolRow, ToolSpotlight } from '@/components/ToolCard';
 import { SectionHeader, StatTile } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/States';
 import { PrivacyBadge } from '@/components/PrivacyBadge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import type { Note, Tool } from '@/types';
@@ -46,7 +44,7 @@ function relativeTime(timestamp: number, locale: string): string {
   return formatter.format(Math.round(diff / 86400000), 'day');
 }
 
-/** Day-of-year rotation: the spotlight changes daily but never flickers on re-render. */
+/** Day-of-year rotation: changes daily, never flickers between renders. */
 function pickSpotlight(pool: Tool[]): Tool {
   const start = new Date(new Date().getFullYear(), 0, 0);
   const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
@@ -57,12 +55,11 @@ export default function Home() {
   const { t, tl, locale } = useI18n();
   const { favorites } = useFavorites();
   const { recent, usage } = useRecent();
-  const { compact } = usePreferences();
   const [notes] = useLocalStorage<Note[]>(StorageKeys.notes, []);
   useDocumentTitle(t('dash.question'));
 
-  const greeting = t(greetingKey(new Date().getHours()));
   const hasHistory = recent.length > 0;
+  const today = new Date().toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
 
   const quickActions = useMemo(
     () => QUICK_ACTION_IDS.map((id) => toolMap.get(id)).filter((tool): tool is Tool => Boolean(tool)),
@@ -74,7 +71,7 @@ export default function Home() {
       recent
         .map((entry) => ({ tool: toolMap.get(entry.toolId), entry }))
         .filter((item): item is { tool: Tool; entry: (typeof recent)[number] } => Boolean(item.tool))
-        .slice(0, 6),
+        .slice(0, 5),
     [recent],
   );
 
@@ -83,7 +80,6 @@ export default function Home() {
     [favorites],
   );
 
-  /** Recommendations follow the user's own history; popular tools fill the gap. */
   const recommended = useMemo(() => {
     const usedCategories = new Set(
       recent.map((entry) => toolMap.get(entry.toolId)?.category).filter(Boolean) as string[],
@@ -96,8 +92,8 @@ export default function Home() {
     for (const tool of [...fromHistory, ...fallback]) {
       if (!merged.some((item) => item.id === tool.id)) merged.push(tool);
     }
-    return merged.slice(0, hasHistory ? 4 : 6);
-  }, [recent, hasHistory]);
+    return merged.slice(0, 8);
+  }, [recent]);
 
   const spotlight = useMemo(() => pickSpotlight(featuredTools.length > 0 ? featuredTools : popularTools), []);
   const weekCount = usage.weekly[isoWeekKey()] ?? 0;
@@ -107,79 +103,63 @@ export default function Home() {
     return sorted[0] ? toolMap.get(sorted[0].toolId) : undefined;
   }, [recent]);
 
-  const gridClass = cn('grid gap-3 sm:grid-cols-2 2xl:grid-cols-3', compact && 'gap-2 xl:grid-cols-3 2xl:grid-cols-4');
-
   return (
-    <div className="space-y-12">
-      {/* Hero */}
-      <section className="pt-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-[13px] font-medium text-muted">
-            {greeting} <span aria-hidden="true">👋</span>
+    <div className="space-y-14">
+      {/* Masthead */}
+      <section>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+          <p className="nova-caps">
+            {t(greetingKey(new Date().getHours()))} · {today}
           </p>
           <PrivacyBadge className="hidden sm:inline-flex" />
         </div>
-        <h1 className="nova-display mt-2 text-[34px] text-ink sm:text-[44px]">{t('dash.question')}</h1>
-        <p className="mt-3 text-[15px] text-muted">{t('dash.searchHint')}</p>
 
-        <div className="mt-6 max-w-3xl">
+        <h1 className="nova-display mt-8 max-w-3xl text-[42px] text-ink sm:text-[58px]">{t('dash.question')}</h1>
+        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">{t('dash.searchHint')}</p>
+
+        <div className="mt-8 max-w-3xl">
           <SmartSearch />
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           {quickActions.map((tool) => (
             <ToolChip key={tool.id} tool={tool} />
           ))}
         </div>
       </section>
 
-      {/* Stats only once there is something real to count */}
       {hasHistory ? (
         <section>
-          <SectionHeader title={t('dash.stats')} icon={<TrendingUp className="h-4 w-4" />} />
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatTile
-              label={t('dash.statsWeek')}
-              value={weekCount}
-              icon={<Zap className="h-4 w-4" />}
-              accent={weekCount > 0}
-            />
-            <StatTile label={t('dash.statsTotal')} value={usage.total} icon={<Flame className="h-4 w-4" />} />
-            <StatTile
-              label={t('dash.statsSaved')}
-              value={`~${formatSpan(usage.total * 120)}`}
-              hint="≈2 min / tool"
-              icon={<Clock className="h-4 w-4" />}
-            />
-            <StatTile
-              label={t('dash.statsFavorite')}
-              value={topTool ? tl(topTool.name) : '—'}
-              icon={<Star className="h-4 w-4" />}
-            />
+          <SectionHeader title={t('dash.stats')} index="01" />
+          <div className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
+            <StatTile label={t('dash.statsWeek')} value={weekCount} accent={weekCount > 0} />
+            <StatTile label={t('dash.statsTotal')} value={usage.total} />
+            <StatTile label={t('dash.statsSaved')} value={`~${formatSpan(usage.total * 120)}`} hint="≈2 min / tool" />
+            <StatTile label={t('dash.statsFavorite')} value={topTool ? tl(topTool.name) : '—'} />
           </div>
         </section>
       ) : null}
 
-      <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-        <div className="space-y-10">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-12">
           {favoriteTools.length > 0 ? (
             <section>
               <SectionHeader
                 title={t('dash.favoriteTools')}
-                icon={<Star className="h-4 w-4" />}
+                index={hasHistory ? '02' : '01'}
                 action={
                   <Link
                     to="/favorites"
-                    className="inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-caps text-muted transition-colors hover:text-ink"
                   >
                     {t('common.all')}
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ArrowRight className="h-3 w-3" />
                   </Link>
                 }
               />
-              <div className={gridClass}>
-                {favoriteTools.slice(0, compact ? 8 : 6).map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} compact={compact} />
+              <div className="border-t border-line">
+                {favoriteTools.slice(0, 6).map((tool, index) => (
+                  <ToolIndexRow key={tool.id} tool={tool} index={index + 1} />
                 ))}
               </div>
             </section>
@@ -188,18 +168,69 @@ export default function Home() {
           <section>
             <SectionHeader
               title={hasHistory ? t('dash.recommended') : t('dash.popularTools')}
-              icon={<Sparkles className="h-4 w-4" />}
+              index={favoriteTools.length > 0 ? (hasHistory ? '03' : '02') : hasHistory ? '02' : '01'}
             />
-            <div className={gridClass}>
-              {recommended.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} compact={compact} />
+            <div className="border-t border-line">
+              {recommended.map((tool, index) => (
+                <ToolIndexRow key={tool.id} tool={tool} index={index + 1} />
               ))}
             </div>
           </section>
 
+          <section>
+            <SectionHeader title={t('nav.categories')} />
+            <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+              {categories.map((category, index) => {
+                const count = tools.filter((tool) => tool.category === category.id).length;
+                return (
+                  <Link
+                    key={category.id}
+                    to={`/tools?category=${category.id}`}
+                    className="group flex items-baseline gap-3 border-b border-line py-2.5 transition-colors hover:border-ink"
+                  >
+                    <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14px] font-medium text-ink">{tl(category.name)}</span>
+                      <span className="block truncate text-[12px] text-muted">{tl(category.description)}</span>
+                    </span>
+                    <span className="font-mono text-[11px] text-faint">{count}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <div className="min-w-0 space-y-12">
+          <section>
+            <ToolSpotlight tool={spotlight} eyebrow={t('dash.spotlight')} />
+          </section>
+
+          {hasHistory ? (
+            <section>
+              <SectionHeader
+                title={t('dash.recentTools')}
+                action={
+                  <Link
+                    to="/history"
+                    className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-caps text-muted transition-colors hover:text-ink"
+                  >
+                    {t('nav.history')}
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                }
+              />
+              <div>
+                {recentTools.map(({ tool, entry }) => (
+                  <ToolRow key={tool.id} tool={tool} meta={relativeTime(entry.at, locale)} />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           {newTools.length > 0 ? (
             <section>
-              <SectionHeader title={t('common.new')} icon={<Sparkles className="h-4 w-4" />} />
+              <SectionHeader title={t('common.new')} />
               <div className="flex flex-wrap gap-2">
                 {newTools.map((tool) => (
                   <ToolChip key={tool.id} tool={tool} />
@@ -208,106 +239,46 @@ export default function Home() {
             </section>
           ) : null}
 
-          <section>
-            <SectionHeader title={t('nav.categories')} icon={<Zap className="h-4 w-4" />} />
-            <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-              {categories.map((category) => {
-                const Icon = category.icon;
-                const count = tools.filter((tool) => tool.category === category.id).length;
-                return (
-                  <Link
-                    key={category.id}
-                    to={`/tools?category=${category.id}`}
-                    className="nova-card nova-interactive group flex items-center gap-3 rounded-2xl p-3.5 hover:border-line-strong"
-                  >
-                    <span
-                      className="nova-glyph flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line bg-surface"
-                      style={{ color: category.tint }}
-                    >
-                      <Icon className="h-4 w-4" strokeWidth={1.9} />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-[13px] font-semibold text-ink">{tl(category.name)}</span>
-                      <span className="block text-xs text-faint">{count}</span>
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-
-        <div className="space-y-10">
-          <section>
-            <SectionHeader title={t('dash.spotlight')} icon={<Sparkles className="h-4 w-4" />} />
-            <ToolSpotlight tool={spotlight} eyebrow={t('dash.spotlightEyebrow')} />
-          </section>
-
-          {hasHistory ? (
-            <section>
-              <SectionHeader
-                title={t('dash.recentTools')}
-                icon={<Clock className="h-4 w-4" />}
-                action={
-                  <Link
-                    to="/history"
-                    className="inline-flex items-center gap-1 text-[13px] font-medium text-muted transition-colors hover:text-ink"
-                  >
-                    {t('nav.history')}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                }
-              />
-              <div className="nova-card rounded-2xl p-1.5">
-                {recentTools.map(({ tool, entry }) => (
-                  <ToolRow key={tool.id} tool={tool} meta={relativeTime(entry.at, locale)} />
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {hasHistory && favoriteTools.length === 0 ? (
-            <EmptyState
-              compact
-              icon={<Star className="h-4 w-4" />}
-              title={t('dash.noFavorites')}
-              description={t('dash.noFavoritesHint')}
-            />
-          ) : null}
-
           {notes.length > 0 ? (
             <section>
-              <SectionHeader title={t('dash.savedItems')} icon={<StickyNote className="h-4 w-4" />} />
-              <div className="space-y-2">
+              <SectionHeader title={t('dash.savedItems')} icon={<StickyNote className="h-3.5 w-3.5" />} />
+              <div>
                 {notes
                   .slice()
                   .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt)
-                  .slice(0, 4)
+                  .slice(0, 3)
                   .map((note) => (
                     <Link
                       key={note.id}
                       to="/tools/notes"
-                      className="nova-card nova-interactive block rounded-xl p-3 hover:border-line-strong"
+                      className="block border-b border-line py-2.5 transition-colors last:border-0 hover:bg-accent/[0.04]"
                     >
                       <p className="truncate text-[13px] font-medium text-ink">{note.title || t('notes.untitled')}</p>
-                      <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted">
+                      <p className="mt-0.5 line-clamp-1 text-[12px] text-muted">
                         {note.body || t('notes.bodyPlaceholder')}
                       </p>
                     </Link>
                   ))}
                 <Link
                   to="/tools/notes"
-                  className="inline-flex items-center gap-1 px-1 text-[13px] font-medium text-accent transition-colors hover:brightness-110"
+                  className="mt-3 inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-caps text-accent"
                 >
                   {notes.length} {t('notes.count')}
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
             </section>
           ) : null}
 
+          {hasHistory && favoriteTools.length === 0 ? (
+            <section>
+              <SectionHeader title={t('dash.noFavorites')} icon={<Star className="h-3.5 w-3.5" />} />
+              <p className="text-[13px] leading-relaxed text-muted">{t('dash.noFavoritesHint')}</p>
+            </section>
+          ) : null}
+
           <section>
-            <SectionHeader title={t('dash.trending')} icon={<TrendingUp className="h-4 w-4" />} />
+            <SectionHeader title={t('dash.trending')} icon={<Clock className="h-3.5 w-3.5" />} />
             <div className="flex flex-wrap gap-2">
               {popularTools.slice(0, 10).map((tool) => (
                 <ToolChip key={tool.id} tool={tool} />

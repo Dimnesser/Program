@@ -1,21 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ChevronDown, Command, Gauge, Lock, Sparkles, WifiOff } from 'lucide-react';
+import { ArrowRight, ChevronDown, Command, Gauge, Lock, Moon, Sun, WifiOff } from 'lucide-react';
 import { useI18n, LANGUAGES } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
 import { writeStorage, StorageKeys } from '@/lib/storage';
 import { categories } from '@/data/categories';
 import { popularTools, tools } from '@/data/tools';
 import { Logo } from '@/components/Logo';
-import { ToolCard } from '@/components/ToolCard';
+import { ToolIndexRow } from '@/components/ToolCard';
 import { PalettePreview } from '@/components/PalettePreview';
-import { Button, LinkButton } from '@/components/ui/Button';
-import { Kbd } from '@/components/ui/Badge';
 import { Footer } from '@/components/layout/Footer';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { cn } from '@/lib/utils';
 import type { Language } from '@/types';
-import { Moon, Sun } from 'lucide-react';
 
 const WHY = [
   { icon: Command, titleKey: 'landing.why1.title', textKey: 'landing.why1.text' },
@@ -32,6 +29,19 @@ const FAQ = [
   { q: 'landing.faq5.q', a: 'landing.faq5.a' },
 ] as const;
 
+/** A numbered, ruled section heading — the spine of the page. */
+function Rubric({ index, title, subtitle }: { index: string; title: string; subtitle?: string }) {
+  return (
+    <div className="mb-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-t-2 border-ink pt-3">
+      <h2 className="flex items-baseline gap-3 font-sans text-[13px] font-semibold uppercase tracking-caps text-ink">
+        <span className="font-mono text-[11px] font-normal text-faint">{index}</span>
+        {title}
+      </h2>
+      {subtitle ? <p className="max-w-md text-[13px] text-muted">{subtitle}</p> : null}
+    </div>
+  );
+}
+
 export default function Landing() {
   const { t, tl, language, setLanguage } = useI18n();
   const { resolved, setMode } = useTheme();
@@ -46,13 +56,13 @@ export default function Landing() {
 
   return (
     <div className="nova-backdrop min-h-dvh">
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur">
+        <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-4 px-4 sm:px-6">
           <Link to="/welcome" aria-label="NOVA">
             <Logo />
           </Link>
-          <nav className="ml-auto flex items-center gap-1">
-            <div className="hidden items-center rounded-xl border border-line bg-surface/70 p-0.5 sm:flex">
+          <nav className="ml-auto flex items-center gap-3">
+            <div className="hidden items-center gap-1 sm:flex">
               {LANGUAGES.map((item) => (
                 <button
                   key={item.id}
@@ -60,11 +70,12 @@ export default function Landing() {
                   onClick={() => setLanguage(item.id as Language)}
                   aria-pressed={language === item.id}
                   className={cn(
-                    'flex h-8 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-colors',
-                    language === item.id ? 'bg-elevated text-ink shadow-soft' : 'text-faint hover:text-ink',
+                    'px-1 font-mono text-[11px] uppercase tracking-caps transition-colors',
+                    language === item.id
+                      ? 'text-ink underline decoration-accent underline-offset-4'
+                      : 'text-faint hover:text-muted',
                   )}
                 >
-                  <span aria-hidden="true">{item.flag}</span>
                   {item.native}
                 </button>
               ))}
@@ -73,99 +84,102 @@ export default function Landing() {
               type="button"
               onClick={() => setMode(resolved === 'dark' ? 'light' : 'dark')}
               aria-label={t('shortcuts.toggleTheme')}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-muted transition-colors hover:bg-elevated hover:text-ink"
+              className="flex h-7 w-7 items-center justify-center text-faint transition-colors hover:text-ink"
             >
-              {resolved === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {resolved === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
             </button>
-            <Button variant="primary" size="sm" className="ml-1" onClick={() => enter('/dashboard')}>
+            <button
+              type="button"
+              onClick={() => enter('/dashboard')}
+              className="h-8 bg-ink px-3.5 text-[13px] font-medium text-bg transition-opacity hover:opacity-90"
+            >
               {t('landing.cta')}
-            </Button>
+            </button>
           </nav>
         </div>
       </header>
 
-      <main>
-        {/* Hero */}
-        <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-14 text-center sm:px-6 sm:pt-24">
-          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card/70 px-3 py-1.5 text-[12px] font-medium text-muted backdrop-blur-xl">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-            {t('landing.badge')}
-          </span>
+      <main className="mx-auto w-full max-w-5xl px-4 sm:px-6">
+        {/* Masthead */}
+        <section className="border-b border-line py-16 sm:py-24">
+          <p className="nova-caps">{t('landing.badge')}</p>
 
-          <h1 className="nova-display mx-auto mt-6 max-w-3xl text-balance text-[42px] text-ink sm:text-[64px]">
-            {t('landing.title')}
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-balance text-[17px] leading-relaxed text-muted">
-            {t('landing.subtitle')}
-          </p>
+          <h1 className="nova-display mt-6 max-w-3xl text-[44px] text-ink sm:text-[72px]">{t('landing.title')}</h1>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => enter('/dashboard')}
-              iconRight={<ArrowRight className="h-4 w-4" />}
-              className="w-full sm:w-auto"
-            >
-              {t('landing.cta')}
-            </Button>
-            <Button size="lg" onClick={() => enter('/tools')} className="w-full sm:w-auto">
-              {t('landing.ctaSecondary')}
-            </Button>
+          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+            <p className="max-w-md text-[16px] leading-relaxed text-muted">{t('landing.subtitle')}</p>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => enter('/dashboard')}
+                className="inline-flex h-11 items-center gap-2 bg-ink px-6 text-[14px] font-medium text-bg transition-opacity hover:opacity-90"
+              >
+                {t('landing.cta')}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => enter('/tools')}
+                className="inline-flex h-11 items-center border border-line px-6 text-[14px] font-medium text-ink transition-colors hover:border-ink"
+              >
+                {t('landing.ctaSecondary')}
+              </button>
+            </div>
           </div>
 
-          <div className="relative mx-auto mt-14 max-w-xl">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-x-10 -top-8 bottom-0 rounded-[40px] bg-accent/[0.07] blur-3xl"
-            />
+          <div className="mt-16">
             <PalettePreview />
           </div>
 
-          <p className="mt-5 flex items-center justify-center gap-2 text-[13px] text-faint">
-            <Kbd>⌘</Kbd>
-            <Kbd>K</Kbd>
-            <span>{t('shortcuts.palette')}</span>
-          </p>
-
-          <dl className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-3">
+          <dl className="mt-16 grid grid-cols-3 gap-px border border-line bg-line">
             {[
-              { value: `${tools.length}+`, label: t('about.toolsCount') },
+              { value: `${tools.length}`, label: t('about.toolsCount') },
               { value: String(categories.length), label: t('about.categoriesCount') },
               { value: '0', label: t('about.serversCount') },
             ].map((stat) => (
-              <div key={stat.label} className="nova-card rounded-2xl px-3 py-4">
-                <dt className="text-2xl font-semibold tracking-[-0.02em] text-ink sm:text-3xl">{stat.value}</dt>
-                <dd className="mt-1 text-[11px] leading-snug text-muted sm:text-xs">{stat.label}</dd>
+              <div key={stat.label} className="bg-bg px-4 py-6 text-center">
+                <dt className="font-serif text-[32px] font-semibold tracking-[-0.02em] text-ink sm:text-[40px]">
+                  {stat.value}
+                </dt>
+                <dd className="nova-caps mt-2">{stat.label}</dd>
               </div>
             ))}
           </dl>
         </section>
 
-        {/* Popular tools */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">{t('landing.popular')}</h2>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {popularTools.slice(0, 9).map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
+        {/* Popular tools, as an index */}
+        <section className="py-16">
+          <Rubric index="01" title={t('landing.popular')} />
+          <div className="border-t border-line">
+            {popularTools.slice(0, 10).map((tool, index) => (
+              <ToolIndexRow key={tool.id} tool={tool} index={index + 1} />
             ))}
           </div>
+          <button
+            type="button"
+            onClick={() => enter('/tools')}
+            className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-caps text-accent transition-opacity hover:opacity-70"
+          >
+            {t('nav.tools')}
+            <ArrowRight className="h-3 w-3" />
+          </button>
         </section>
 
-        {/* Why NOVA */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">{t('landing.why')}</h2>
-          <p className="mt-1.5 text-[15px] text-muted">{t('landing.whySubtitle')}</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {WHY.map((item) => {
+        {/* Why */}
+        <section className="py-16">
+          <Rubric index="02" title={t('landing.why')} subtitle={t('landing.whySubtitle')} />
+          <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+            {WHY.map((item, index) => {
               const Icon = item.icon;
               return (
-                <div key={item.titleKey} className="nova-card rounded-2xl p-5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface text-accent">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <h3 className="mt-4 text-[14px] font-semibold text-ink">{t(item.titleKey)}</h3>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{t(item.textKey)}</p>
+                <div key={item.titleKey} className="border-t border-line pt-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
+                    <Icon className="h-4 w-4 text-faint" strokeWidth={1.7} />
+                  </div>
+                  <h3 className="mt-4 font-serif text-[20px] font-semibold text-ink">{t(item.titleKey)}</h3>
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-muted">{t(item.textKey)}</p>
                 </div>
               );
             })}
@@ -173,28 +187,25 @@ export default function Landing() {
         </section>
 
         {/* Privacy */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <div className="nova-card flex flex-col gap-6 rounded-3xl p-6 sm:p-10 lg:flex-row lg:items-center">
-            <div className="flex-1">
-              <span className="inline-flex items-center gap-2 rounded-full border border-success/25 bg-success/[0.08] px-3 py-1 text-[12px] font-medium text-success">
-                <Lock className="h-3.5 w-3.5" />
-                {t('privacy.badge')}
-              </span>
-              <h2 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">
-                {t('privacy.p1.title')}
-              </h2>
-              <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted">{t('privacy.p1.text')}</p>
-              <LinkButton to="/privacy" size="sm" className="mt-5" iconRight={<ArrowRight className="h-3.5 w-3.5" />}>
+        <section className="py-16">
+          <Rubric index="03" title={t('nav.privacy')} />
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <div>
+              <p className="font-serif text-[26px] font-semibold leading-[1.25] tracking-[-0.02em] text-ink sm:text-[32px]">
+                {t('privacy.p1.text')}
+              </p>
+              <Link
+                to="/privacy"
+                className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-caps text-accent transition-opacity hover:opacity-70"
+              >
                 {t('nav.privacy')}
-              </LinkButton>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
-            <ul className="grid flex-1 gap-2.5">
-              {['privacy.p2.title', 'privacy.p3.title', 'privacy.p4.title', 'privacy.p6.title'].map((key) => (
-                <li
-                  key={key}
-                  className="flex items-center gap-2.5 rounded-xl border border-line bg-surface/60 px-3.5 py-3 text-[13px] text-ink"
-                >
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success" />
+            <ul>
+              {['privacy.p2.title', 'privacy.p3.title', 'privacy.p4.title', 'privacy.p6.title'].map((key, index) => (
+                <li key={key} className="flex items-baseline gap-3 border-b border-line py-3 text-[13.5px] text-ink">
+                  <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
                   {t(key as 'privacy.p2.title')}
                 </li>
               ))}
@@ -203,28 +214,26 @@ export default function Landing() {
         </section>
 
         {/* Categories */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">{t('landing.categories')}</h2>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((category) => {
-              const Icon = category.icon;
+        <section className="py-16">
+          <Rubric index="04" title={t('landing.categories')} />
+          <div className="grid gap-x-10 sm:grid-cols-2">
+            {categories.map((category, index) => {
               const count = tools.filter((tool) => tool.category === category.id).length;
               return (
                 <button
                   key={category.id}
                   type="button"
                   onClick={() => enter(`/tools?category=${category.id}`)}
-                  className="nova-card nova-interactive group rounded-2xl p-5 text-left hover:border-line-strong"
+                  className="group flex items-baseline gap-3 border-b border-line py-4 text-left transition-colors hover:border-ink"
                 >
-                  <span
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface"
-                    style={{ color: category.tint }}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.9} />
+                  <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-serif text-[18px] font-semibold text-ink">
+                      {tl(category.name)}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[12.5px] text-muted">{tl(category.description)}</span>
                   </span>
-                  <h3 className="mt-4 text-[14px] font-semibold text-ink">{tl(category.name)}</h3>
-                  <p className="mt-1 text-[13px] leading-relaxed text-muted">{tl(category.description)}</p>
-                  <p className="mt-3 text-xs text-faint">{count}</p>
+                  <span className="font-mono text-[11px] text-faint">{count}</span>
                 </button>
               );
             })}
@@ -232,26 +241,29 @@ export default function Landing() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-          <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink sm:text-2xl">{t('landing.faq')}</h2>
-          <div className="nova-card mt-5 divide-y divide-line overflow-hidden rounded-2xl">
+        <section className="py-16">
+          <Rubric index="05" title={t('landing.faq')} />
+          <div className="border-t border-line">
             {FAQ.map((item, index) => {
               const open = openFaq === index;
               return (
-                <div key={item.q}>
+                <div key={item.q} className="border-b border-line">
                   <button
                     type="button"
                     onClick={() => setOpenFaq(open ? null : index)}
                     aria-expanded={open}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                    className="flex w-full items-baseline justify-between gap-4 py-4 text-left"
                   >
-                    <span className="text-[14px] font-medium text-ink">{t(item.q)}</span>
+                    <span className="flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] text-faint">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="text-[15px] font-medium text-ink">{t(item.q)}</span>
+                    </span>
                     <ChevronDown
                       className={cn('h-4 w-4 shrink-0 text-faint transition-transform duration-200', open && 'rotate-180')}
                     />
                   </button>
                   {open ? (
-                    <p className="animate-fade-in px-5 pb-4 text-[13px] leading-relaxed text-muted">{t(item.a)}</p>
+                    <p className="animate-fade-in pb-5 pl-8 text-[13.5px] leading-relaxed text-muted">{t(item.a)}</p>
                   ) : null}
                 </div>
               );
@@ -259,20 +271,17 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Closing CTA */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-14 text-center sm:px-6">
-          <h2 className="text-balance text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">
-            {t('brand.tagline')}
-          </h2>
-          <Button
-            variant="primary"
-            size="lg"
-            className="mt-6"
+        {/* Colophon */}
+        <section className="border-t-2 border-ink py-20 text-center">
+          <p className="nova-display text-[32px] text-ink sm:text-[44px]">{t('brand.tagline')}</p>
+          <button
+            type="button"
             onClick={() => enter('/dashboard')}
-            iconRight={<ArrowRight className="h-4 w-4" />}
+            className="mt-8 inline-flex h-11 items-center gap-2 bg-ink px-8 text-[14px] font-medium text-bg transition-opacity hover:opacity-90"
           >
             {t('landing.cta')}
-          </Button>
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </section>
       </main>
 

@@ -55,7 +55,7 @@ export default function RandomNumber() {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
       <Card className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <Input label={t('random.min')} value={min} onChange={(event) => setMin(event.target.value)} inputMode="numeric" />

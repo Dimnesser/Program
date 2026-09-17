@@ -108,7 +108,7 @@ export default function Flashcards() {
             }
           />
         ) : (
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
             <Card className="flex flex-col items-center gap-5 py-8">
               <button
                 type="button"
@@ -184,7 +184,7 @@ export default function Flashcards() {
           </div>
         )
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
           <Card className="space-y-3">
             <Input
               label={t('cards.deck')}

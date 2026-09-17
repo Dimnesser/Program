@@ -26,7 +26,8 @@ npm run preview  # serve the production build (service worker included)
   (`g` then `h` / `t` / `f` / `r` / `s`).
 - **67 tools across 8 categories**, each on its own route (`/tools/<id>`).
 - **Bilingual** — Ukrainian (default) and English, switchable everywhere.
-- **Dark-first theming** with a full, separately-designed light palette and a system option.
+- **Editorial design system** — a warm-paper light theme and a warm-black dark theme,
+  both hand-tuned rather than inverted, plus a system option.
 - **PWA** — installable, with an offline app shell and cached tools.
 - **Batch image processing** — drop up to 40 photos into the compressor, resizer or
   converter, process them in one pass and download the lot as a ZIP.
@@ -34,6 +35,26 @@ npm run preview  # serve the production build (service worker included)
   and can be exported, imported or erased from Settings.
 - **Preferences that do something** — reduced motion and compact density are real
   switches wired to `data-*` attributes, not decoration.
+
+## Design
+
+NOVA is laid out like a printed reference work rather than a wall of cards: a masthead,
+numbered rubrics, and a catalogue of ruled index rows.
+
+- **Type does the work.** IBM Plex Serif sets headlines and figures, Inter carries the
+  interface text, and IBM Plex Mono handles labels, counts and eyebrows in small caps.
+  All three are self-hosted (latin, latin-ext and cyrillic subsets) in `public/fonts/`.
+- **Rules instead of shadows.** Structure comes from hairline dividers and a faint
+  engineering grid; `boxShadow` is `none` throughout and radii sit between 2 and 10px.
+- **Two real themes.** Light is warm paper (`251 250 248`) with near-black ink; dark is
+  warm black (`13 12 11`) with a lifted accent. Both are defined as `--nova-*` custom
+  properties in `src/index.css` and consumed through Tailwind, so a token change
+  re-skins all 67 tools at once.
+- **Accent with restraint.** A single ink-blue accent marks the one action that matters
+  on a screen; everything else is ink, muted ink and rule.
+
+Layout primitives live in `src/index.css` (`.nova-card`, `.nova-panel`, `.nova-row`,
+`.nova-caps`, `.nova-field`, `.nova-display`) and the scale is in `tailwind.config.js`.
 
 ## Architecture
 
@@ -106,7 +127,7 @@ emits `404.html` so deep links survive a refresh on hosts without rewrite rules.
 
 Image, text, JSON, hashing and password tools use Canvas, Web Crypto and plain JS —
 nothing is transmitted. History stores a tool id and a timestamp, never tool contents.
-Generated passwords are never persisted. Inter is self-hosted, so the app makes no
+Generated passwords are never persisted. Every font is self-hosted, so the app makes no
 third-party requests at all.
 
 ## Stack

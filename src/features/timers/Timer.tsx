@@ -79,7 +79,7 @@ export default function Timer({ preset, initial }: ToolProps) {
   const progress = total > 0 ? remaining / total : 0;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <Card className="flex flex-col items-center justify-center gap-6 py-10">
         <Ring progress={progress} tone={remaining === 0 ? 'success' : remaining < 30 ? 'warning' : 'accent'}>
           <span className="font-mono text-4xl font-semibold tabular-nums tracking-tight text-ink sm:text-5xl">

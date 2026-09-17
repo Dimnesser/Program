@@ -19,7 +19,7 @@ const resolve = (mode: ThemeMode): 'dark' | 'light' =>
   mode === 'system' ? (systemPrefersLight() ? 'light' : 'dark') : mode;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>(() => readStorage<ThemeMode>(StorageKeys.theme, 'dark'));
+  const [mode, setModeState] = useState<ThemeMode>(() => readStorage<ThemeMode>(StorageKeys.theme, 'light'));
   const [resolved, setResolved] = useState<'dark' | 'light'>(() => resolve(mode));
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.theme = next;
     document
       .querySelector('meta[name="theme-color"]:not([media])')
-      ?.setAttribute('content', next === 'dark' ? '#07080d' : '#f4f6fb');
+      ?.setAttribute('content', next === 'dark' ? '#0d0c0b' : '#fbfaf8');
   }, [mode]);
 
   useEffect(() => {

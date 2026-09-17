@@ -62,7 +62,7 @@ export default function ShortLink({ initial }: ToolProps) {
   const shortUrl = (code: string) => `${window.location.origin}${import.meta.env.BASE_URL}s/${code}`;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
       <Card className="space-y-4">
         <Input
           label={t('short.longUrl')}

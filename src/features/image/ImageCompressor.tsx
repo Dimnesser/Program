@@ -88,7 +88,7 @@ export default function ImageCompressor() {
   const ready = batch.items.filter((item) => item.result).length;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <div className="space-y-4">
         {/* Totals */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

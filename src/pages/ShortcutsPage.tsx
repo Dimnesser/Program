@@ -1,7 +1,7 @@
 import { useI18n } from '@/lib/i18n';
-import { Card } from '@/components/ui/Card';
 import { Kbd } from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function ShortcutsPage() {
   const { t } = useI18n();
@@ -33,17 +33,17 @@ export default function ShortcutsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">{t('shortcuts.title')}</h1>
-        <p className="mt-1.5 text-[15px] text-muted">{t('shortcuts.subtitle')}</p>
-      </header>
+      <PageHeader eyebrow="NOVA" title={t('shortcuts.title')} subtitle={t('shortcuts.subtitle')} />
 
       {groups.map((group) => (
-        <Card key={group.title} className="p-0">
-          <h2 className="border-b border-line px-5 py-3.5 text-[13px] font-semibold text-ink">{group.title}</h2>
-          <ul className="divide-y divide-line">
+        <section key={group.title}>
+          <h2 className="nova-caps border-b border-line pb-2">{group.title}</h2>
+          <ul>
             {group.items.map((item) => (
-              <li key={`${group.title}-${item.keys.join('')}-${item.label}`} className="flex items-center justify-between gap-4 px-5 py-3">
+              <li
+                key={`${group.title}-${item.keys.join('')}-${item.label}`}
+                className="flex items-center justify-between gap-4 border-b border-line py-3"
+              >
                 <span className="text-[13px] text-muted">{item.label}</span>
                 <span className="flex shrink-0 items-center gap-1">
                   {item.keys.map((key, index) => (
@@ -58,7 +58,7 @@ export default function ShortcutsPage() {
               </li>
             ))}
           </ul>
-        </Card>
+        </section>
       ))}
     </div>
   );

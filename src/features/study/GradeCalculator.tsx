@@ -58,7 +58,7 @@ export default function GradeCalculator() {
   const max = Number(scale);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <Card className="space-y-4">
         <Select
           label={t('grade.scale')}

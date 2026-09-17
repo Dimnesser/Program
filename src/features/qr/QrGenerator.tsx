@@ -136,7 +136,7 @@ export default function QrGenerator({ initial }: ToolProps) {
   }, [payload, success, error, t]);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
       <Card className="space-y-5">
         <Segmented
           value={type}

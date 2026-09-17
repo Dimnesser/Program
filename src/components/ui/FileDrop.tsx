@@ -48,11 +48,9 @@ export function FileDrop({
         handleFiles(event.dataTransfer.files);
       }}
       className={cn(
-        'group relative flex flex-col items-center justify-center rounded-2xl border border-dashed text-center transition-all duration-200 ease-nova',
+        'group relative flex flex-col items-center justify-center border border-dashed text-center transition-colors duration-150',
         compact ? 'px-4 py-6' : 'px-6 py-12',
-        dragging
-          ? 'border-accent bg-accent/[0.07] shadow-glow'
-          : 'border-line bg-surface/40 hover:border-line-strong hover:bg-surface/70',
+        dragging ? 'border-ink bg-accent/[0.05]' : 'border-line hover:border-line-strong',
         className,
       )}
     >
@@ -70,9 +68,9 @@ export function FileDrop({
       />
       <span
         className={cn(
-          'mb-3 flex items-center justify-center rounded-2xl border border-line bg-elevated text-muted transition-colors',
+          'mb-3 flex items-center justify-center border border-line text-faint transition-colors',
           compact ? 'h-9 w-9' : 'h-12 w-12',
-          dragging && 'border-accent/40 text-accent',
+          dragging && 'border-ink text-ink',
         )}
       >
         {icon ?? <UploadCloud className={compact ? 'h-4 w-4' : 'h-5 w-5'} />}
@@ -84,7 +82,7 @@ export function FileDrop({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="absolute inset-0 cursor-pointer rounded-2xl"
+        className="absolute inset-0 cursor-pointer"
         aria-label={title ?? t('common.selectFile')}
       />
     </div>

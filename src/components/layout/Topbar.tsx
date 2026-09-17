@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Languages, Monitor, Moon, Search, Settings, Sun, UserRound } from 'lucide-react';
+import { Languages, Monitor, Moon, Search, Settings, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { useI18n, LANGUAGES } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
@@ -19,28 +19,27 @@ export function Topbar() {
   const [profileOpen, setProfileOpen] = useState(false);
 
   const themeOptions: { id: ThemeMode; label: string; icon: typeof Sun }[] = [
-    { id: 'dark', label: t('settings.themeDark'), icon: Moon },
     { id: 'light', label: t('settings.themeLight'), icon: Sun },
+    { id: 'dark', label: t('settings.themeDark'), icon: Moon },
     { id: 'system', label: t('settings.themeSystem'), icon: Monitor },
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6">
-        <Link to="/" className="rounded-xl lg:hidden" aria-label="NOVA">
-          <Logo compact />
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur">
+      <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6">
+        <Link to="/" className="lg:hidden" aria-label="NOVA">
+          <Logo />
         </Link>
 
         <button
           type="button"
           onClick={() => openWith('')}
           className={cn(
-            'group flex h-10 min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-line bg-surface/70 px-3',
-            'text-left text-[13px] text-faint transition-all duration-200 ease-nova',
-            'hover:border-line-strong hover:bg-surface md:max-w-md',
+            'group flex h-8 min-w-0 flex-1 items-center gap-2 border-b border-line px-1 text-left',
+            'text-[13px] text-faint transition-colors duration-150 hover:border-ink hover:text-muted md:max-w-sm',
           )}
         >
-          <Search className="h-4 w-4 shrink-0 transition-colors group-hover:text-muted" />
+          <Search className="h-3.5 w-3.5 shrink-0" />
           <span className="flex-1 truncate">{t('common.searchAnything')}</span>
           <span className="hidden shrink-0 items-center gap-1 sm:flex">
             <Kbd>⌘</Kbd>
@@ -48,8 +47,9 @@ export function Topbar() {
           </span>
         </button>
 
-        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
-          <div className="hidden items-center rounded-xl border border-line bg-surface/70 p-0.5 sm:flex">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          {/* Language: plain mono letters, no flags or pills. */}
+          <div className="hidden items-center gap-0.5 sm:flex">
             {LANGUAGES.map((item) => (
               <button
                 key={item.id}
@@ -58,25 +58,27 @@ export function Topbar() {
                 aria-pressed={language === item.id}
                 title={item.label}
                 className={cn(
-                  'flex h-8 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-colors duration-150',
-                  language === item.id ? 'bg-elevated text-ink shadow-soft' : 'text-faint hover:text-ink',
+                  'h-7 px-1.5 font-mono text-[11px] uppercase tracking-caps transition-colors',
+                  language === item.id ? 'text-ink underline decoration-accent underline-offset-4' : 'text-faint hover:text-muted',
                 )}
               >
-                <span aria-hidden="true">{item.flag}</span>
-                <span>{item.native}</span>
+                {item.native}
               </button>
             ))}
           </div>
 
           <IconButton
             label={t('settings.language')}
+            size="sm"
             className="sm:hidden"
             onClick={() => setLanguage(language === 'uk' ? 'en' : 'uk')}
           >
             <Languages className="h-4 w-4" />
           </IconButton>
 
-          <div className="hidden items-center rounded-xl border border-line bg-surface/70 p-0.5 md:flex">
+          <span className="mx-1 hidden h-4 w-px bg-line sm:block" />
+
+          <div className="hidden items-center gap-0.5 md:flex">
             {themeOptions.map((option) => {
               const Icon = option.icon;
               return (
@@ -88,8 +90,8 @@ export function Topbar() {
                   title={option.label}
                   aria-label={option.label}
                   className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150',
-                    mode === option.id ? 'bg-elevated text-ink shadow-soft' : 'text-faint hover:text-ink',
+                    'flex h-7 w-7 items-center justify-center transition-colors',
+                    mode === option.id ? 'text-ink' : 'text-faint hover:text-muted',
                   )}
                 >
                   <Icon className="h-[15px] w-[15px]" />
@@ -100,21 +102,31 @@ export function Topbar() {
 
           <IconButton
             label={t('shortcuts.toggleTheme')}
+            size="sm"
             className="md:hidden"
             onClick={() => setMode(resolved === 'dark' ? 'light' : 'dark')}
           >
             {resolved === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </IconButton>
 
-          <IconButton label={t('nav.settings')} onClick={() => navigate('/settings')} className="hidden sm:inline-flex">
+          <IconButton
+            label={t('nav.settings')}
+            size="sm"
+            onClick={() => navigate('/settings')}
+            className="hidden sm:inline-flex"
+          >
             <Settings className="h-4 w-4" />
           </IconButton>
 
-          <IconButton label={t('nav.profile')} onClick={() => setProfileOpen(true)}>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-elevated text-muted">
-              <UserRound className="h-3.5 w-3.5" />
-            </span>
-          </IconButton>
+          <button
+            type="button"
+            onClick={() => setProfileOpen(true)}
+            aria-label={t('nav.profile')}
+            title={t('nav.profile')}
+            className="flex h-7 w-7 items-center justify-center border border-line font-mono text-[10px] text-muted transition-colors hover:border-line-strong hover:text-ink"
+          >
+            ME
+          </button>
         </div>
       </div>
 
@@ -130,14 +142,14 @@ export function Topbar() {
             <Link
               to="/settings"
               onClick={() => setProfileOpen(false)}
-              className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-center text-[13px] font-medium text-ink transition-colors hover:border-line-strong"
+              className="flex-1 border border-line px-4 py-3 text-center text-[13px] font-medium text-ink transition-colors hover:border-line-strong"
             >
               {t('nav.settings')}
             </Link>
             <Link
               to="/privacy"
               onClick={() => setProfileOpen(false)}
-              className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-center text-[13px] font-medium text-ink transition-colors hover:border-line-strong"
+              className="flex-1 border border-line px-4 py-3 text-center text-[13px] font-medium text-ink transition-colors hover:border-line-strong"
             >
               {t('nav.privacy')}
             </Link>

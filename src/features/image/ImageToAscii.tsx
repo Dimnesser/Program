@@ -71,7 +71,7 @@ export default function ImageToAscii() {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="flex flex-col p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <span className="flex items-center gap-2 text-[13px] font-medium text-muted">

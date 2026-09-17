@@ -126,7 +126,7 @@ export default function BackgroundRemover() {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
       <Card className="p-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <figure className="space-y-2">

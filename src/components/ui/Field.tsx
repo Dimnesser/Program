@@ -22,7 +22,7 @@ export function Label({
   return (
     <label
       htmlFor={htmlFor}
-      className={cn('mb-1.5 flex items-center justify-between gap-2 text-[13px] font-medium text-muted', className)}
+      className={cn('mb-1.5 flex items-center justify-between gap-2 text-[12.5px] font-medium text-muted', className)}
     >
       <span>{children}</span>
       {hint ? <span className="text-xs font-normal text-faint">{hint}</span> : null}
@@ -223,8 +223,7 @@ export function Switch({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
-        'group flex w-full items-center justify-between gap-3 rounded-xl px-1 py-2 text-left',
-        'transition-colors duration-150 hover:bg-elevated/60',
+        'group flex w-full items-center justify-between gap-3 py-2 text-left transition-colors duration-150',
         className,
       )}
     >
@@ -235,14 +234,14 @@ export function Switch({
       <span
         aria-hidden="true"
         className={cn(
-          'relative h-6 w-11 shrink-0 rounded-full border transition-colors duration-200',
-          checked ? 'border-accent bg-accent' : 'border-line-strong bg-surface',
+          'relative h-[18px] w-8 shrink-0 rounded-full border transition-colors duration-200',
+          checked ? 'border-ink bg-ink' : 'border-line-strong bg-surface',
         )}
       >
         <span
           className={cn(
-            'absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full transition-all duration-200 ease-nova',
-            checked ? 'left-[26px] bg-accent-fg' : 'left-[3px] bg-faint',
+            'absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full transition-all duration-200 ease-nova',
+            checked ? 'left-[16px] bg-bg' : 'left-[2px] bg-faint',
           )}
         />
       </span>
@@ -268,16 +267,15 @@ export function Checkbox({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
-        'flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left text-[13px] text-ink',
-        'transition-colors duration-150 hover:bg-elevated/70',
+        'flex w-full items-center gap-2.5 py-1.5 text-left text-[13px] text-ink transition-colors duration-150',
         className,
       )}
     >
       <span
         aria-hidden="true"
         className={cn(
-          'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[6px] border transition-all duration-150',
-          checked ? 'border-accent bg-accent text-accent-fg' : 'border-line-strong bg-surface',
+          'flex h-[15px] w-[15px] shrink-0 items-center justify-center border transition-colors duration-150',
+          checked ? 'border-ink bg-ink text-bg' : 'border-line-strong bg-surface',
         )}
       >
         {checked ? (
@@ -311,7 +309,7 @@ export function Segmented<T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        'inline-flex w-full items-center gap-1 rounded-xl border border-line bg-surface/80 p-1',
+        'inline-flex w-full items-center border border-line bg-surface p-0.5',
         className,
       )}
     >
@@ -325,11 +323,9 @@ export function Segmented<T extends string>({
             aria-selected={active}
             onClick={() => onChange(option.value)}
             className={cn(
-              'flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg font-medium transition-all duration-150 ease-nova',
-              size === 'sm' ? 'h-7 px-2 text-xs' : 'h-8 px-3 text-[13px]',
-              active
-                ? 'bg-elevated text-ink shadow-[0_1px_2px_rgb(0_0_0/0.15)] ring-1 ring-line'
-                : 'text-muted hover:text-ink',
+              'flex min-w-0 flex-1 items-center justify-center gap-1.5 font-medium transition-colors duration-150',
+              size === 'sm' ? 'h-6 px-2 text-[11px]' : 'h-7 px-3 text-[12.5px]',
+              active ? 'bg-ink text-bg' : 'text-muted hover:text-ink',
             )}
           >
             {option.icon}
@@ -356,13 +352,13 @@ export function ColorField({
   return (
     <div className={cn('w-full', className)}>
       <Label htmlFor={id}>{label}</Label>
-      <div className="flex items-center gap-2 rounded-xl border border-line bg-surface px-2 py-1.5 transition-colors hover:border-line-strong">
+      <div className="flex items-center gap-2 border border-line bg-surface px-2 py-1.5 transition-colors hover:border-line-strong">
         <input
           id={id}
           type="color"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="h-7 w-9 cursor-pointer rounded-md border border-line bg-transparent p-0"
+          className="h-6 w-8 cursor-pointer border border-line bg-transparent p-0"
           aria-label={label}
         />
         <input

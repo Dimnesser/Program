@@ -17,7 +17,7 @@ export function MobileNav() {
   return (
     <nav
       aria-label={t('nav.menu')}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map((item) => {
@@ -29,19 +29,17 @@ export function MobileNav() {
                 end={item.end}
                 className={({ isActive }) =>
                   cn(
-                    'flex h-14 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors duration-150',
-                    isActive ? 'text-accent' : 'text-faint hover:text-ink',
+                    'relative flex h-13 flex-col items-center justify-center gap-1 py-2.5 font-mono text-[9px] uppercase tracking-caps transition-colors',
+                    isActive ? 'text-ink' : 'text-faint hover:text-muted',
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <span className="relative">
-                      {isActive ? (
-                        <span className="absolute -inset-x-2.5 -inset-y-1.5 rounded-lg bg-accent/10" aria-hidden="true" />
-                      ) : null}
-                      <Icon className="relative h-[18px] w-[18px]" strokeWidth={isActive ? 2.2 : 1.8} />
-                    </span>
+                    {isActive ? (
+                      <span aria-hidden="true" className="absolute inset-x-4 top-0 h-[2px] bg-accent" />
+                    ) : null}
+                    <Icon className="h-[17px] w-[17px]" strokeWidth={isActive ? 2 : 1.6} />
                     <span className="max-w-full truncate px-1">{item.label}</span>
                   </>
                 )}

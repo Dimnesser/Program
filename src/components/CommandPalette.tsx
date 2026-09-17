@@ -271,9 +271,9 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
   return createPortal(
     <AnimatePresence>
       {open ? (
-        <div className="fixed inset-0 z-[95] flex items-start justify-center px-3 pt-[12vh] sm:px-6">
+        <div className="fixed inset-0 z-[95] flex items-start justify-center px-3 pt-[10vh] sm:px-6">
           <motion.div
-            className="absolute inset-0 bg-black/55 backdrop-blur-[3px]"
+            className="absolute inset-0 bg-ink/25"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -288,7 +288,7 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.985 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-line bg-elevated/95 shadow-pop backdrop-blur-2xl"
+            className="relative flex w-full max-w-2xl flex-col overflow-hidden border border-ink bg-surface shadow-pop"
           >
             <div className="flex items-center gap-3 border-b border-line px-4">
               <SearchIcon className="h-4 w-4 shrink-0 text-faint" />
@@ -298,32 +298,30 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('search.placeholder')}
                 aria-label={t('common.search')}
-                className="h-14 w-full bg-transparent text-[15px] text-ink outline-none placeholder:text-faint"
+                className="h-14 w-full bg-transparent text-[16px] text-ink outline-none placeholder:text-faint"
                 autoComplete="off"
                 spellCheck={false}
               />
               <button
                 type="button"
                 onClick={onClose}
-                className="hidden shrink-0 rounded-md border border-line px-1.5 py-0.5 text-[11px] font-medium text-faint transition-colors hover:text-ink sm:block"
+                className="hidden shrink-0 border border-line px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-caps text-faint transition-colors hover:text-ink sm:block"
               >
                 ESC
               </button>
             </div>
 
             {smartAnswer ? (
-              <div className="flex items-start gap-3 border-b border-line bg-accent/[0.05] px-4 py-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                  <Sparkles className="h-3.5 w-3.5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-accent">{t('search.smart')}</p>
-                  <p className="mt-0.5 break-words font-mono text-sm font-medium text-ink">{smartAnswer.answer}</p>
-                </div>
+              <div className="border-b border-line bg-accent/[0.05] px-4 py-3">
+                <p className="nova-caps flex items-center gap-1.5 text-accent">
+                  <Sparkles className="h-3 w-3" />
+                  {t('search.smart')}
+                </p>
+                <p className="mt-1 break-words font-mono text-[15px] font-medium text-ink">{smartAnswer.answer}</p>
               </div>
             ) : null}
 
-            <div ref={listRef} className="max-h-[52vh] overflow-y-auto overscroll-contain p-2">
+            <div ref={listRef} className="max-h-[52vh] overflow-y-auto overscroll-contain">
               {items.length === 0 ? (
                 <div className="px-3 py-10 text-center">
                   <p className="text-sm font-medium text-ink">{t('search.noResults')}</p>
@@ -339,7 +337,6 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                         ? item.query
                         : item.label;
                   const Icon = item.kind === 'tool' ? item.tool.icon : null;
-                  const tint = item.kind === 'tool' ? categoryMap.get(item.tool.category)?.tint : undefined;
 
                   return (
                     <button
@@ -349,16 +346,15 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
                       onMouseMove={() => setActive(index)}
                       onClick={() => run(item)}
                       className={cn(
-                        'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors duration-100',
-                        isActive ? 'bg-accent/10' : 'hover:bg-card/60',
+                        'flex w-full items-center gap-3 border-b border-line px-4 py-2.5 text-left transition-colors duration-100',
+                        isActive ? 'bg-accent/[0.07]' : 'hover:bg-accent/[0.03]',
                       )}
                     >
                       <span
                         className={cn(
-                          'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-surface',
-                          isActive && 'border-accent/30',
+                          'flex h-7 w-7 shrink-0 items-center justify-center border border-line text-faint',
+                          isActive && 'border-ink text-ink',
                         )}
-                        style={tint ? { color: tint } : undefined}
                       >
                         {Icon ? (
                           <Icon className="h-4 w-4" strokeWidth={1.9} />
@@ -390,7 +386,7 @@ function CommandPalette({ open, seed, onClose }: { open: boolean; seed: string; 
               )}
             </div>
 
-            <div className="hidden items-center justify-between gap-4 border-t border-line px-4 py-2.5 text-[11px] text-faint sm:flex">
+            <div className="hidden items-center justify-between gap-4 border-t border-line px-4 py-2 font-mono text-[10px] uppercase tracking-caps text-faint sm:flex">
               <span className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
                   <Kbd>↑</Kbd>

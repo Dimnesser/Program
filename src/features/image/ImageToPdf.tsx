@@ -79,7 +79,7 @@ export default function ImageToPdf() {
   const totalSize = images.reduce((sum, image) => sum + image.size, 0);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <Card className="space-y-4 p-4">
         {images.length === 0 ? (
           <ImageDrop multiple onLoad={(loaded) => setImages(loaded)} />

@@ -73,7 +73,7 @@ export function Dialog({
       {open ? (
         <div className="fixed inset-0 z-[90] flex items-end justify-center p-0 sm:items-center sm:p-6">
           <motion.div
-            className="absolute inset-0 bg-black/55 backdrop-blur-[3px]"
+            className="absolute inset-0 bg-ink/25"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -90,13 +90,13 @@ export function Dialog({
             exit={{ opacity: 0, y: 12, scale: 0.985 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-              'relative w-full rounded-t-3xl border border-line bg-card shadow-pop sm:rounded-3xl',
+              'relative w-full border border-ink bg-surface shadow-pop',
               widths[size],
             )}
           >
             <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
               <div className="min-w-0">
-                <h2 className="text-base font-semibold text-ink">{title}</h2>
+                <h2 className="font-serif text-[18px] font-semibold text-ink">{title}</h2>
                 {description ? <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p> : null}
               </div>
               <IconButton label={t('common.close')} size="sm" onClick={onClose}>
@@ -148,7 +148,7 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-xl border border-line px-4 text-sm font-medium text-muted transition-colors hover:text-ink"
+            className="h-9 border border-line px-4 text-[13px] font-medium text-muted transition-colors hover:border-line-strong hover:text-ink"
           >
             {cancelLabel}
           </button>
@@ -160,8 +160,8 @@ export function ConfirmDialog({
               onClose();
             }}
             className={cn(
-              'h-10 rounded-xl px-4 text-sm font-semibold transition-colors',
-              danger ? 'bg-danger text-white hover:brightness-110' : 'bg-accent text-accent-fg hover:brightness-110',
+              'h-9 px-4 text-[13px] font-semibold transition-colors',
+              danger ? 'bg-danger text-white hover:opacity-90' : 'bg-ink text-bg hover:opacity-90',
             )}
           >
             {confirmLabel}

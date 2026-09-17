@@ -13,9 +13,8 @@ export function PrivacyBadge({ className, asLink = true }: { className?: string;
   );
 
   const classes = cn(
-    'inline-flex max-w-full items-center gap-1.5 rounded-full border border-success/25 bg-success/[0.07]',
-    'px-2.5 py-1 text-[11px] font-medium text-success transition-colors',
-    asLink && 'hover:border-success/40 hover:bg-success/10',
+    'inline-flex max-w-full items-center gap-1.5 font-mono text-[10px] uppercase tracking-caps text-success',
+    asLink && 'transition-opacity hover:opacity-70',
     className,
   );
 

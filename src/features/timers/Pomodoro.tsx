@@ -181,7 +181,7 @@ export default function Pomodoro() {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
       <Card className="relative flex flex-col items-center justify-center gap-6 py-10">
         <IconButton label={t('pomo.fullscreen')} className="absolute right-4 top-4" onClick={() => setFullscreen(true)}>
           <Maximize2 className="h-4 w-4" />

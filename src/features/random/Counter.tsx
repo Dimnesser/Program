@@ -23,7 +23,7 @@ export default function Counter() {
   const change = (delta: number) => setState({ ...state, value: state.value + delta });
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
+    <div className="mx-auto grid max-w-3xl gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)]">
       <Card className="flex flex-col items-center justify-center gap-8 py-14">
         <input
           value={state.label}

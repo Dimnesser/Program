@@ -1,5 +1,5 @@
 /* NOVA service worker — offline-first shell with a network-first HTML strategy. */
-const VERSION = 'nova-v2';
+const VERSION = 'nova-v3';
 const SHELL_CACHE = `${VERSION}-shell`;
 const ASSET_CACHE = `${VERSION}-assets`;
 
@@ -18,9 +18,12 @@ const SHELL_ASSETS = [
   `${BASE}manifest.webmanifest`,
   `${BASE}favicon.svg`,
   `${BASE}icons/icon-192.png`,
-  `${BASE}fonts/inter.css`,
+  `${BASE}fonts/fonts.css`,
   `${BASE}fonts/inter-latin.woff2`,
   `${BASE}fonts/inter-cyrillic.woff2`,
+  `${BASE}fonts/plex-serif-600-latin.woff2`,
+  `${BASE}fonts/plex-serif-600-cyrillic.woff2`,
+  `${BASE}fonts/plex-mono-400-latin.woff2`,
 ];
 
 self.addEventListener('install', (event) => {

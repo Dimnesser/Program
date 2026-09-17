@@ -65,7 +65,7 @@ export default function ColorPicker({ initial }: ToolProps) {
   ];
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
       <div className="space-y-5">
         <Card className="space-y-4">
           <div
